@@ -1,0 +1,70 @@
+apply plugin: 'java'
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.0.0'
+    }
+}
+
+allprojects {
+    group 'com.microsoft.jll'    
+}
+
+subprojects {
+    repositories {
+        mavenCentral()
+        flatDir {
+            name 'localRepository'
+            dirs "$rootProject.projectDir/lib"
+        }
+    }    
+}
+
+task combineJarExternal(type: Jar) {
+    from zipTree('AndroidCore/build/libs/AndroidCore.jar')
+    from zipTree('AndroidCll/build/libs/AndroidCll.jar')
+}
+
+task combineJarDocExternal(type: Jar) {
+    from zipTree('AndroidCore/build/libs/AndroidCore-javadoc.jar')
+    from zipTree('AndroidCll/build/libs/AndroidCll-javadoc.jar')
+}
+
+task combineJarSourcesExternal(type: Jar) {
+    from zipTree('AndroidCore/build/libs/AndroidCore-sources.jar')
+    from zipTree('AndroidCll/build/libs/AndroidCll-sources.jar')
+}
+
+task renameJarExternal(type: Copy) {
+    from 'build/libs'
+    into 'tempOutput/'
+    rename('CLL.jar', 'AndroidExternalCll.jar')
+}
+
+task renameJarDocExternal(type: Copy) {
+    from 'build/libs'
+    into 'tempOutput/'
+    rename('CLL.jar', 'AndroidExternalCll-javadoc.jar')
+}
+
+task renameJarSourcesExternal(type: Copy) {
+    from 'build/libs'
+    into 'tempOutput/'
+    rename('CLL.jar', 'AndroidExternalCll-sources.jar')
+}
+
+task combineJars {
+    
+}
+
+combineJars.finalizedBy combineJarExternal, combineJarDocExternal, combineJarSourcesExternal
+combineJarExternal.finalizedBy renameJarExternal
+combineJarDocExternal.finalizedBy renameJarDocExternal
+combineJarSourcesExternal.finalizedBy renameJarSourcesExternal
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.1'
+}

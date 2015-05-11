@@ -1,0 +1,19 @@
+import "../../schema/sdk/Microsoft.Telemetry.bond"
+
+namespace Ms.Media
+
+[Description("Media Usage Telemetry")]
+struct MediaUsage : Microsoft.Telemetry.Domain
+{
+    [Description("The type of media being played.")]
+    10: string mediaType;
+
+    [Description("Length of the media in milliseconds")]
+    20: uint64 lengthMs;
+
+    [Description("The specific Media Usage event being performed by the player/tuner (see spec online for enumerated values)")]
+    30: uint32 action;
+
+    [Description("Time position in the stream/playback in milliseconds. 0 represents the beginning of the song.")]
+    40: uint64 positionMs;
+};

@@ -1,0 +1,9 @@
+import "../../schema/sdk/Microsoft.Telemetry.bond"
+import "../../schema/sdk/Ms.Telemetry.bond"
+
+namespace Microsoft.Android.LoggingLibrary;
+
+[Description("Android's Client Telemetry Snapshot")]
+struct Snapshot : Microsoft.Telemetry.Data<Ms.Telemetry.ClientSnapshot>
+{ 
+};

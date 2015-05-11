@@ -1,0 +1,52 @@
+import "../../schema/sdk/Microsoft.Telemetry.bond"
+import "./Ms.Media.bond"
+
+namespace Microsoft.Example
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Example Part B Schemas
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+[Priority("Normal")]
+[Latency("Normal")]
+[Description("Hello World Part B and C Schema")]
+struct HelloWorldBC : Microsoft.Telemetry.Data<Ms.Media.MediaUsage>
+{
+    [Description("Email alias of developer who instrumented the event using this schema")]
+    10: string EmailAlias;
+
+    [Description("Any test string")]
+    20: string HelloWorldMessage;
+
+    [Description("A 1-5 rating (1 = poor, 5 = awesome) of how you rated the developer instrumentation process.")]
+    30: int32 HelloWorldRating;
+
+    [Description("Feedback on the process. Please limit to 1024 characters")]
+    40: string HelloWorldFeedback;
+};
+
+
+[Priority("Normal")]
+[Latency("Normal")]
+[Description("Hello World Part C Schema")]
+struct HelloWorldC : Microsoft.Telemetry.Base
+{
+    [Description("Email alias of developer who instrumented the event using this schema")]
+    10: string EmailAlias;
+
+    [Description("Any test string")]
+    20: string HelloWorldMessage;
+
+    [Description("A 1-5 rating (1 = poor, 5 = awesome) of how you rated the developer instrumentation process.")]
+    30: int32 HelloWorldRating;
+
+    [Description("Feedback on the process. Please limit to 1024 characters")]
+    40: string HelloWorldFeedback;
+};
+
+[Priority("Normal")]
+[Latency("Normal")]
+[Description("Hello World Part B Schema")]
+struct HelloWorldB : Microsoft.Telemetry.Data<Ms.Media.MediaUsage>
+{    
+};

@@ -1,0 +1,13 @@
+import "../../schema/sdk/Microsoft.Telemetry.bond"
+
+namespace Microsoft.AndroidCll
+
+[Description("A heartbeat event from the cll")]
+struct UploadStatistics : Microsoft.Telemetry.Base
+{
+    [Name("Size of buffers before upload.")]
+    10: required int32 bufferSize;
+
+    [Name("Number of events to be written.")]
+    20: required int64 eventCount;
+};
