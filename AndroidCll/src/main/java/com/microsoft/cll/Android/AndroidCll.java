@@ -2,8 +2,14 @@ package com.microsoft.cll.Android;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import com.microsoft.cll.*;
+
 import com.microsoft.cll.AndroidLogger;
+import com.microsoft.cll.Cll;
+import com.microsoft.cll.CllEvents;
+import com.microsoft.cll.EventHandler;
+import com.microsoft.cll.ICllEvents;
+import com.microsoft.cll.SettingsStore;
+import com.microsoft.telemetry.IChannel;
 
 import java.util.Map;
 
@@ -13,7 +19,7 @@ import java.util.Map;
 public class AndroidCll extends Cll implements SettingsStore.UpdateListener{
     private static final String cllName = "AndroidCLL";
     private final String sharedPreferencesName = "AndroidCllSharedPreferences";
-    private Context context;
+    private final SharedPreferences preferences;
 
     /**
      * Create a Cll for Android
@@ -31,11 +37,11 @@ public class AndroidCll extends Cll implements SettingsStore.UpdateListener{
      */
     public AndroidCll(String iKey, Context context) {
         super(iKey, new AndroidLogger(), cllName);
-        this.context = context;
         this.partA               = new AndroidPartA(logger, iKey, context);
         this.eventHandler        = new EventHandler(clientTelemetry, cllEvents, logger, context.getFilesDir().getPath().toString());
 
         this.cllEvents.add(new CllEvents(this.partA, this.clientTelemetry, this));
+        this.preferences = context.getSharedPreferences(sharedPreferencesName, 0);
 
         setSettingsStoreValues();
         SettingsStore.setUpdateListener(this);
@@ -51,17 +57,22 @@ public class AndroidCll extends Cll implements SettingsStore.UpdateListener{
 
     @Override
     public void OnUpdate(String settingName, String settingValue) {
-        SharedPreferences preferences = context.getSharedPreferences(sharedPreferencesName, 0);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(settingName, settingValue);
         editor.apply();
     }
 
     private void setSettingsStoreValues() {
-        SharedPreferences preferences = context.getSharedPreferences(sharedPreferencesName, 0);
         Map<String, String> settings = (Map<String, String>) preferences.getAll();
         for(Map.Entry<String, String> setting : settings.entrySet()) {
             SettingsStore.updateAppSetting(setting.getKey(), setting.getValue());
         }
+    }
+
+    public static IChannel initialize(String iKey, Context app, String endpoint) {
+        AndroidCll cll = new AndroidCll(iKey, app);
+        cll.setEndpointUrl(endpoint);
+        cll.start();
+        return cll;
     }
 }

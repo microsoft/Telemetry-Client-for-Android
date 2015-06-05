@@ -17,8 +17,8 @@ import java.util.concurrent.TimeUnit;
 public class EventHandler extends ScheduledWorker
 {
     private final String TAG = "EventHandler";
-    private final AbstractHandler criticalHandler;
-    private final AbstractHandler normalHandler;
+    final AbstractHandler criticalHandler;
+    final AbstractHandler normalHandler;
     private final ClientTelemetry clientTelemetry;
     private final List<ICllEvents> cllEvents;
     private final ILogger logger;
@@ -133,7 +133,7 @@ public class EventHandler extends ScheduledWorker
                     logger.warn(TAG, "No space on disk to store events");
                     return false;
                 }
-
+                break;
             default:
                 logger.error(TAG, "Unknown persistence");
                 assert(false);
@@ -270,6 +270,13 @@ public class EventHandler extends ScheduledWorker
     void setSender(EventSender sender)
     {
         this.sender = sender;
+    }
+
+    /**
+     * Write all events in memory to disk
+     */
+    void synchronize() {
+        ((NormalEventHandler)normalHandler).writeQueueToDisk();
     }
 
     /**

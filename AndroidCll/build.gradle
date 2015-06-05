@@ -1,11 +1,21 @@
 apply plugin: 'com.android.library'
+apply plugin: "com.jfrog.bintray"
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'maven-publish'
 
 android {
-    compileSdkVersion 20
+    compileSdkVersion 22
     buildToolsVersion '21.1.2'
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_6
         targetCompatibility JavaVersion.VERSION_1_6
+    }
+
+    defaultConfig {
+        minSdkVersion 9
+        targetSdkVersion 22
+        versionCode 1
+        versionName "1.0"
     }
 }
 
@@ -62,4 +72,74 @@ task sourcesJar(type: Jar) {
 artifacts {
     archives docsJar
     archives sourcesJar
+}
+
+status='Release'
+version=projectVersion
+group=projectGroup
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+install {
+    repositories.mavenInstaller {
+        pom {
+            project {
+                packaging 'aar'
+                name projectName
+                description projectDesc
+                url gitUrl
+
+                licenses {
+                    license {
+                        name 'MIT'
+                        url 'http://opensource.org/licenses/MIT'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'asimovteam'
+                        email 'reachcll@microsoft.com'
+                    }
+                }
+
+                scm {
+                    connection gitUrl
+                    developerConnection gitUrl
+                    url gitUrl
+                }
+            }
+        }
+    }
+}
+
+bintray {
+    user = properties.getProperty('bintrayUser').toString()
+    key = properties.getProperty('bintrayKey').toString()
+
+    dryRun = false // Whether to run this as dry-run, without deploying
+    publish = false // If version should be auto published after an upload
+
+    configurations = ['archives']
+
+    pkg {
+        repo = 'maven'
+        name = projectName
+        desc = projectDesc
+        websiteUrl = siteUrl
+        issueTrackerUrl = siteUrl + '/issues'
+        vcsUrl = gitUrl
+        licenses = ['MIT']
+        publicDownloadNumbers = true
+
+        version {
+            name = projectVersion
+            vcsTag = projectVersion
+            gpg {
+                sign = true
+                passphrase = properties.getProperty('gpgPassphrase').toString()
+            }
+        }
+    }
 }

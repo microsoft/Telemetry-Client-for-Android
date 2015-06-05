@@ -1,7 +1,7 @@
 /*
- * Generated from Microsoft.Android.LoggingLibrary.bond (https://github.com/Microsoft/bond)
+ * Generated from Microsoft.Telemetry.Extensions.bond (https://github.com/Microsoft/bond)
 */
-package Microsoft.Android.LoggingLibrary;
+package com.microsoft.telemetry.extensions;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
@@ -20,18 +20,36 @@ import com.microsoft.telemetry.Extension;
 import com.microsoft.telemetry.JsonHelper;
 
 /**
- * Data contract class Snapshot.
+ * Data contract class android.
  */
-public class Snapshot extends Data<Ms.Telemetry.ClientSnapshot> implements
+public class android extends Extension implements
     IJsonSerializable
 {
     /**
-     * Initializes a new instance of the Snapshot class.
+     * Backing field for property LibVer.
      */
-    public Snapshot()
+    private String libVer;
+    
+    /**
+     * Initializes a new instance of the android class.
+     */
+    public android()
     {
         this.InitializeFields();
-        this.SetupAttributes();
+    }
+    
+    /**
+     * Gets the LibVer property.
+     */
+    public String getLibVer() {
+        return this.libVer;
+    }
+    
+    /**
+     * Sets the LibVer property.
+     */
+    public void setLibVer(String value) {
+        this.libVer = value;
     }
     
 
@@ -42,21 +60,20 @@ public class Snapshot extends Data<Ms.Telemetry.ClientSnapshot> implements
     protected String serializeContent(Writer writer) throws IOException
     {
         String prefix = super.serializeContent(writer);
+        if (!(this.libVer == null))
+        {
+            writer.write(prefix + "\"libVer\":");
+            writer.write(JsonHelper.convert(this.libVer));
+            prefix = ",";
+        }
+        
         return prefix;
-    }
-    
-    /**
-     * Sets up the events attributes
-     */
-    public void SetupAttributes()
-    {
-        this.Attributes.put("Description", "Android's Client Telemetry Snapshot");
     }
     
     /**
      * Optionally initializes fields for the current context.
      */
     protected void InitializeFields() {
-        QualifiedName = "Microsoft.Android.LoggingLibrary.Snapshot";
+        
     }
 }

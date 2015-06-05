@@ -19,9 +19,9 @@ public class EventHandlerTests {
     private String filePath;
 
     @Before
-    public void setup() {
+    public void setUp() {
         try {
-            url = new URL("");
+            url = new URL("http://www.test.com");
 
             filePath = new File(".").getCanonicalPath() + File.separator + "cllEvents";
             File dir = new File(filePath);
@@ -29,7 +29,7 @@ public class EventHandlerTests {
                 dir.mkdir();
             }
         } catch (Exception e) {
-
+            cleanup();
         }
     }
 

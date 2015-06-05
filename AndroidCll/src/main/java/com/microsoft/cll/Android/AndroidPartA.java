@@ -2,11 +2,13 @@ package com.microsoft.cll.Android;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
@@ -96,7 +98,7 @@ public class AndroidPartA extends PartA {
             logger.info(TAG, "Access Wifi State permission was not Provided. DeviceID will be blank");
         }
 
-        if(android.os.Build.getRadioVersion() != null) {
+        if(testRadioVersion()) {
             deviceExt.setDeviceClass(DeviceTypePhone);
         } else {
             DisplayMetrics dm = new DisplayMetrics();
@@ -116,6 +118,19 @@ public class AndroidPartA extends PartA {
 
         osVer = String.format("%s", android.os.Build.VERSION.RELEASE);
         osExt.setLocale(Locale.getDefault().getDisplayName());
+    }
+
+    /**
+     * Tests the radio version to see if it is null
+     * @return False if null or sdk version is < 14
+     */
+    @TargetApi(14)
+    private boolean testRadioVersion() {
+        if(Build.VERSION.SDK_INT >= 14) {
+            return (android.os.Build.getRadioVersion() != null);
+        } else {
+            return false;
+        }
     }
 
     /**

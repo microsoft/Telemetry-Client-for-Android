@@ -82,7 +82,7 @@ public class NormalEventHandler extends AbstractHandler {
     /**
      * Writes items from the queue to non-volatile storage
      */
-    private synchronized void writeQueueToDisk() {
+    synchronized void writeQueueToDisk() {
         try {
             List<String> events = new ArrayList<String>(queueSize);
             queueStorage.drainTo(events);

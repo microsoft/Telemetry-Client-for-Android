@@ -1,6 +1,11 @@
+/*
+ * Generated from Ms.Telemetry.bond (https://github.com/Microsoft/bond)
+*/
 package Ms.Telemetry;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Map;
+import java.util.List;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.ArrayList;
@@ -96,7 +101,7 @@ public class ClientSnapshot extends Domain implements
     private int maxSettingsResponseLatencyMs;
     
     /**
-     * Initializes a new instance of the <see cref="ClientSnapshot"/> class.
+     * Initializes a new instance of the ClientSnapshot class.
      */
     public ClientSnapshot()
     {
@@ -375,7 +380,7 @@ public class ClientSnapshot extends Domain implements
             prefix = ",";
         }
         
-        if (!(this.cacheUsagePercent == 0.0d))
+        if (this.cacheUsagePercent > 0.0d)
         {
             writer.write(prefix + "\"cacheUsagePercent\":");
             writer.write(JsonHelper.convert(this.cacheUsagePercent));

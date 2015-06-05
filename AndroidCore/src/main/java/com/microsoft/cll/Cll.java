@@ -7,6 +7,7 @@ package com.microsoft.cll;
 
 import com.microsoft.telemetry.Base;
 import com.microsoft.telemetry.Envelope;
+import com.microsoft.telemetry.IChannel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * starts the thread for collection of <code>IJsonSerializable</code> events, and then
  * <code>setEndpointUrl</code> must be called to set the url for the events to be sent to.
  */
-public class Cll
+public class Cll implements IChannel
 {
     public CorrelationVector correlationVector;
 
@@ -222,6 +223,10 @@ public class Cll
      */
     public void setExperimentId(String id) {
         partA.setExpId(id);
+    }
+
+    public void synchronize() {
+        eventHandler.synchronize();
     }
 
     /**

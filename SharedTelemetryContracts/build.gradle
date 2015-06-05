@@ -7,24 +7,13 @@ targetCompatibility = 1.6
 sourceSets {
     main {
         java {
-            srcDir 'src/main/java'                
-            srcDir 'src/generated/java'
-        }            
-    }
-    test {
-        java {
-            srcDir 'src/test/java'
-            srcDir 'src/test/generated/java'
+            srcDir 'src/main/java'
         }
     }
 }
 
 dependencies {
-    compile 'org.json:json:20140107'
-    compile project(':SharedTelemetryContracts')
-    testCompile('junit:junit:4.12')
-    testCompile('org.powermock:powermock-module-junit4:1.6.1')
-    testCompile('org.powermock:powermock-api-easymock:1.6.1')
+    compile fileTree(dir: 'libs', include: ['*.jar'])
 }
 
 task docs(type: Javadoc) {
@@ -50,8 +39,8 @@ artifacts {
 }
 
 status = 'Release'
-group = projectGroup
 version=projectVersion
+group = projectGroup
 
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
@@ -67,8 +56,8 @@ bintray {
 
     pkg {
         repo = 'maven'
-        name = projectName
-        desc = projectDesc
+        name = projectContractsName
+        desc = projectContractsDesc
         websiteUrl = siteUrl
         issueTrackerUrl = siteUrl + '/issues'
         vcsUrl = gitUrl
