@@ -42,12 +42,9 @@ status = 'Release'
 version=projectVersion
 group = projectGroup
 
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-
 bintray {
-    user = properties.getProperty('bintrayUser').toString()
-    key = properties.getProperty('bintrayKey').toString()
+    user = System.getenv("bintrayUser")
+    key = System.getenv("bintrayKey")
 
     dryRun = false // Whether to run this as dry-run, without deploying
     publish = false // If version should be auto published after an upload
@@ -69,7 +66,7 @@ bintray {
             vcsTag = projectVersion
             gpg {
                 sign = true
-                passphrase = properties.getProperty('gpgPassphrase').toString()
+                passphrase = System.getenv("bintrayGPGPassphrase")
             }
         }
     }
