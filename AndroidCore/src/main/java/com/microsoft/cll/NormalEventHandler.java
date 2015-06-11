@@ -1,7 +1,5 @@
 package com.microsoft.cll;
 
-import com.microsoft.telemetry.IJsonSerializable;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -26,13 +24,11 @@ public class NormalEventHandler extends AbstractHandler {
      * to disk later.
      */
     @Override
-    public synchronized void add(IJsonSerializable event) {
-        String serializedEvent = serializer.serialize(event);
-
+    public synchronized void add(String event) {
         // If the queue is full write to disk
-        if(!queueStorage.offer(serializedEvent)) {
+        if(!queueStorage.offer(event)) {
             writeQueueToDisk();
-            queueStorage.offer(serializedEvent);
+            queueStorage.offer(event);
         }
     }
 

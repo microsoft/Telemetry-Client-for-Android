@@ -1,9 +1,5 @@
 package com.microsoft.cll;
 
-import com.microsoft.telemetry.Envelope;
-import com.microsoft.telemetry.IJsonSerializable;
-import com.microsoft.telemetry.extensions.device;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -80,40 +76,37 @@ public class EventHandler extends ScheduledWorker
 
     /**
      * log an item to it's appropriate storage or attempt to send the event immediately if it is real time
-     * @param event The envelope to add
-     * @param persistence The persistence of this event
-     * @param latency The latency of this event
+     * @param event The event to store and send
      * @return True if we added the event to the queue or False if we couldn't add the event
      */
-    protected boolean log(IJsonSerializable event, Cll.EventPersistence persistence, Cll.EventLatency latency)
+    protected boolean log(SerializedEvent event)
     {
         if (Filter(event)) {
             return false;
         }
 
         // If real time don't queue just send, unless the send fails, then queue
-        if(latency == Cll.EventLatency.REALTIME && !isPaused) {
+        if(event.getLatency() == Cll.EventLatency.REALTIME && !isPaused) {
             boolean result = startEventQueueWriter(new EventQueueWriter(endpoint, event, clientTelemetry, cllEvents, logger, executor, this, 1));
             if(result == true) {
                 return true;
             }
         }
 
-        return addToStorage(event, persistence);
+        return addToStorage(event);
     }
 
     /**
      * Adds the event to the appropriate storage
      * @param event The event to store
-     * @param persistence The persistence of this event
      * @return Whether we successfully added the event to storage
      */
-    private boolean addToStorage(IJsonSerializable event, Cll.EventPersistence persistence)
+    private boolean addToStorage(SerializedEvent event)
     {
-        switch (persistence) {
+        switch (event.getPersistence()) {
             case NORMAL:
                 try {
-                    normalHandler.add(event);
+                    normalHandler.add(event.getSerializedData());
                 } catch (IOException e) {
                     logger.error(TAG, "Could not add event to normal storage");
                     return false;
@@ -125,7 +118,7 @@ public class EventHandler extends ScheduledWorker
                 break;
             case CRITICAL:
                 try {
-                    criticalHandler.add(event);
+                    criticalHandler.add(event.getSerializedData());
                 } catch (IOException e) {
                     logger.error(TAG, "Could not add event to normal storage");
                     return false;
@@ -149,9 +142,9 @@ public class EventHandler extends ScheduledWorker
      * @param event the event to sample
      * @return true if we will filter, false if we will send
      */
-    private boolean Filter(IJsonSerializable event)
+    private boolean Filter(SerializedEvent event)
     {
-        if(!IsUploadEnabled() || !IsInSample((Envelope) event)) {
+        if(!IsUploadEnabled() || !IsInSample(event)) {
             logger.info(TAG, "Filtered event");
             return true;
         }
@@ -164,23 +157,17 @@ public class EventHandler extends ScheduledWorker
      * @param event the event to sample
      * @return true if we should be dropped, false if the event should be logged
      */
-    private boolean IsInSample(Envelope event) {
-        if(event.getExt() == null) {
-            return false;
-        }
-
-        device deviceExt = (device)event.getExt().get("device");
-        // We won't include devices in sample that don't have a device id
-        if(deviceExt == null || deviceExt.getLocalId() == null || deviceExt.getLocalId().equals("")) {
+    private boolean IsInSample(SerializedEvent event) {
+        if(event.getDeviceId() == null) {
             return false;
         }
 
         if(sampleId < 0) {
-            String lastDigits = deviceExt.getLocalId().substring(deviceExt.getLocalId().length() - 7);
+            String lastDigits = event.getDeviceId().substring(event.getDeviceId().length() - 7);
             sampleId = Integer.parseInt(lastDigits, 16) % 100;
         }
 
-        if(sampleId < event.getPopSample()) {
+        if(sampleId < event.getSampleRate()) {
             return true;
         }
 

@@ -1,7 +1,5 @@
 package com.microsoft.cll;
 
-import com.microsoft.telemetry.IJsonSerializable;
-
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -15,7 +13,6 @@ import java.util.concurrent.atomic.AtomicLong;
 public abstract class AbstractHandler {
     private final String TAG = "AbstractHandler";
     protected final ILogger logger;
-    protected final EventSerializer serializer;
     protected FileStorage fileStorage;
     protected String filePath;
 
@@ -26,12 +23,11 @@ public abstract class AbstractHandler {
     public AbstractHandler(ILogger logger, String filePath) {
         this.filePath       = filePath;
         this.logger         = logger;
-        this.serializer     = new EventSerializer(logger);
 
         setFileStorageUsed();
     }
 
-    public abstract void add(IJsonSerializable event) throws IOException, FileStorage.FileFullException;
+    public abstract void add(String event) throws IOException, FileStorage.FileFullException;
 
     public abstract List<IStorage> getFilesForDraining();
 

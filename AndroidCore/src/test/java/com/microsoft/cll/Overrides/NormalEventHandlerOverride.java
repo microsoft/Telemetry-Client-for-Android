@@ -3,7 +3,6 @@ package com.microsoft.cll.Overrides;
 import com.microsoft.cll.ILogger;
 import com.microsoft.cll.IStorage;
 import com.microsoft.cll.NormalEventHandler;
-import com.microsoft.telemetry.IJsonSerializable;
 
 public class NormalEventHandlerOverride extends NormalEventHandler {
     public int eventCount;
@@ -13,7 +12,7 @@ public class NormalEventHandlerOverride extends NormalEventHandler {
     }
 
     @Override
-    public synchronized void add(IJsonSerializable event) {
+    public synchronized void add(String event) {
         eventCount++;
     }
 

@@ -15,6 +15,7 @@ import static org.junit.Assert.fail;
 public class CriticalEventHandlerTests {
     private CriticalEventHandler criticalEventHandler;
     private String filePath;
+    private final String newLine = "\r\n";
 
     @Before
     public void setup() {
@@ -63,7 +64,7 @@ public class CriticalEventHandlerTests {
     public void log1Event() {
         List<String> events = null;
         try {
-            criticalEventHandler.add(EventHelper.singleGoodABCEvent);
+            criticalEventHandler.add(EventHelper.singleGoodJsonEvent);
             events = FileHelper.getCriticalEventsOnDisk(filePath);
         } catch (Exception e) {
 
@@ -80,7 +81,7 @@ public class CriticalEventHandlerTests {
         List<String> events = null;
         try {
             for(int i = 0; i < 2000; i++) {
-                criticalEventHandler.add(EventHelper.singleGoodABCEvent);
+                criticalEventHandler.add(EventHelper.singleGoodJsonEvent + newLine);
             }
 
             events = FileHelper.getCriticalEventsOnDisk(filePath);
@@ -98,7 +99,7 @@ public class CriticalEventHandlerTests {
     public void drain1Event() {
         List<String> events = null;
         try {
-            criticalEventHandler.add(EventHelper.singleGoodABCEvent);
+            criticalEventHandler.add(EventHelper.singleGoodJsonEvent);
         } catch (Exception e) {
         }
 
@@ -117,7 +118,7 @@ public class CriticalEventHandlerTests {
         int eventsToAdd = 2000;
         try {
             for(int i = 0; i < eventsToAdd; i++) {
-                criticalEventHandler.add(EventHelper.singleGoodABCEvent);
+                criticalEventHandler.add(EventHelper.singleGoodJsonEvent + newLine);
             }
         } catch (Exception e) {
         }
@@ -147,7 +148,7 @@ public class CriticalEventHandlerTests {
         int currentSpaceUsed = 0;
         while(currentSpaceUsed + eventSize < totalDiskSpaceWeCanUse) {
             try {
-                normalEventHandler.add(EventHelper.singleGoodABCEvent);
+                normalEventHandler.add(EventHelper.singleGoodJsonEvent);
             } catch (Exception e) {
             }
 
@@ -157,7 +158,7 @@ public class CriticalEventHandlerTests {
         normalEventHandler.close(); // Ensure any events in queued get written to disk
         int normalFileCountBefore = FileHelper.findNormalFilesOnDisk(filePath).length;
         try {
-            criticalEventHandler.add(EventHelper.singleGoodABCEvent);
+            criticalEventHandler.add(EventHelper.singleGoodJsonEvent);
         }catch (Exception e) {
         }
 
@@ -169,7 +170,7 @@ public class CriticalEventHandlerTests {
     public void testDispose() {
         try {
             for(int i = 0; i < 1000; i++) {
-                criticalEventHandler.add(EventHelper.singleGoodABCEvent);
+                criticalEventHandler.add(EventHelper.singleGoodJsonEvent);
             }
         } catch (Exception e) {
         }

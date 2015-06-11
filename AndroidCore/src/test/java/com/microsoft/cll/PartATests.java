@@ -28,7 +28,7 @@ public class PartATests
         CustomPartA partA = new CustomPartA(new CustomLogger(), "testikey");
         Base event = (Base) EventHelper.generateBCEvent();
         try {
-            Envelope envelope = partA.populate(event, null);
+            Envelope envelope = partA.populateEnvelope(event, null, 0, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
             assert(envelope.getIKey() == "testikey");
         }catch(Exception e) {
             e.printStackTrace();
@@ -45,8 +45,8 @@ public class PartATests
         CustomPartA partA = new CustomPartA(new CustomLogger(), "");
         Base event = (Base) EventHelper.generateBCEvent();
         try {
-            Envelope envelope = partA.populate(event, null);
-            assert (envelope.getFlags() == 17);
+            Envelope envelope = partA.populateEnvelope(event, null, 0, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
+            assert (envelope.getFlags() == 257);
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -63,7 +63,7 @@ public class PartATests
 
         try {
             for(int i = 0; i < 25; i++) {
-                Envelope envelope = partA.populate(event, null);
+                Envelope envelope = partA.populateEnvelope(event, null, 0, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
                 sequences[i] = envelope.getEpoch() + ":" + envelope.getSeqNum();
             }
 

@@ -13,7 +13,7 @@ public class EventSenderTests {
     @Before
     public void setup() {
         try {
-            URL url = new URL("");
+            URL url = new URL("https://vortex.data.microsoft.com/collect/v1");
             eventSenderOverride = new EventSenderOverride(url);
         } catch (Exception e) {
             fail("Failed to setup test");

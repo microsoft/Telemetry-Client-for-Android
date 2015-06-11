@@ -40,6 +40,14 @@ public class SnapshotScheduler extends ScheduledWorker {
     @Override
     public void run() {
         logger.info(TAG, "Uploading snapshot");
+
+        // Check to see if the interval at which we should drain has changed
+        if(interval != SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.SNAPSHOTSCHEDULEINTERVAL)) {
+            nextExecution.cancel(false);
+            interval = SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.SNAPSHOTSCHEDULEINTERVAL);
+            nextExecution = executor.scheduleAtFixedRate(this, interval, interval, TimeUnit.SECONDS);
+        }
+
         recordStatistics();
     }
 

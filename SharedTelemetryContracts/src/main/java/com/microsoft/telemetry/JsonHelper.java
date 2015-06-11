@@ -101,6 +101,16 @@ public final class JsonHelper {
     }
 
     /**
+     * float to string.
+     *
+     * @param value value of the float.
+     * @return String to represent the float
+     */
+    public static String convert(Float value) {
+        return Float.toString(value);
+    }
+
+    /**
      * double to string.
      *
      * @param value value of the double.

@@ -14,6 +14,7 @@ import static org.junit.Assert.fail;
 public class NormalEventHandlerTests {
     private NormalEventHandler normalEventHandler;
     private String filePath;
+    private final String newLine = "\r\n";
 
     @Before
     public void setup() {
@@ -72,7 +73,7 @@ public class NormalEventHandlerTests {
     public void log1Event() {
         List<String> events = null;
         try {
-            normalEventHandler.add(EventHelper.singleGoodABCEvent);
+            normalEventHandler.add(EventHelper.singleGoodJsonEvent);
             normalEventHandler.close();
             events = FileHelper.getNormalEventsOnDisk(filePath);
         } catch (Exception e) {
@@ -90,7 +91,7 @@ public class NormalEventHandlerTests {
         List<String> events = null;
         try {
             for(int i = 0; i < 2000; i++) {
-                normalEventHandler.add(EventHelper.singleGoodABCEvent);
+                normalEventHandler.add(EventHelper.singleGoodJsonEvent + newLine);
             }
             normalEventHandler.close();
             events = FileHelper.getNormalEventsOnDisk(filePath);
@@ -108,7 +109,7 @@ public class NormalEventHandlerTests {
     public void drain1Event() {
         List<String> events = null;
         try {
-            normalEventHandler.add(EventHelper.singleGoodABCEvent);
+            normalEventHandler.add(EventHelper.singleGoodJsonEvent);
         } catch (Exception e) {
         }
 
@@ -127,7 +128,7 @@ public class NormalEventHandlerTests {
         int eventsToAdd = 2000;
         try {
             for(int i = 0; i < eventsToAdd; i++) {
-                normalEventHandler.add(EventHelper.singleGoodABCEvent);
+                normalEventHandler.add(EventHelper.singleGoodJsonEvent + newLine);
             }
         } catch (Exception e) {
         }
@@ -146,7 +147,7 @@ public class NormalEventHandlerTests {
     public void testDispose() {
         try {
             for(int i = 0; i < 1000; i++) {
-                normalEventHandler.add(EventHelper.singleGoodABCEvent);
+                normalEventHandler.add(EventHelper.singleGoodJsonEvent);
             }
         } catch (Exception e) {
         }

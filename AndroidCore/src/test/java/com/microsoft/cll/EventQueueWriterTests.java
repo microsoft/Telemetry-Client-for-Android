@@ -1,9 +1,9 @@
 package com.microsoft.cll;
 
+import com.microsoft.cll.Helpers.CustomStorageHelper;
 import com.microsoft.cll.Helpers.EventHelper;
 import com.microsoft.cll.Overrides.EventSenderOverride;
-import com.microsoft.cll.Helpers.CustomStorageHelper;
-import com.microsoft.telemetry.IJsonSerializable;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +24,7 @@ public class EventQueueWriterTests {
     @Before
     public void setup() {
         try {
-            url = new URL("");
+            url = new URL("https://vortex.data.microsoft.com/collect/v1");
             eventSenderOverride = new EventSenderOverride(url);
 
             filePath = new File(".").getCanonicalPath() + File.separator + "cllEvents";
@@ -44,8 +44,9 @@ public class EventQueueWriterTests {
 
     @Test
     public void sendRealTimEvent() {
-        IJsonSerializable event = EventHelper.generateABCEvent();
-        EventQueueWriter eventQueueWriter = new EventQueueWriter(url, event, new ClientTelemetry("test"), new ArrayList<ICllEvents>(), new CustomLogger(), null, null, 1);
+        SerializedEvent serializedEvent = new SerializedEvent();
+        serializedEvent.setSerializedData(EventHelper.singleGoodJsonEvent);
+        EventQueueWriter eventQueueWriter = new EventQueueWriter(url, serializedEvent, new ClientTelemetry("test"), new ArrayList<ICllEvents>(), new CustomLogger(), null, null, 1);
         eventQueueWriter.setSender(eventSenderOverride);
         eventQueueWriter.run();
         assert(eventSenderOverride.getNumberOfEventsAccepted() == 1);

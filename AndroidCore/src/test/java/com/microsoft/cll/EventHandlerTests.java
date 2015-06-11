@@ -1,10 +1,8 @@
 package com.microsoft.cll;
 
 import com.microsoft.cll.Helpers.EventHelper;
-import com.microsoft.cll.Helpers.PartAHelper;
 import com.microsoft.cll.Overrides.CriticalEventHandlerOverride;
 import com.microsoft.cll.Overrides.NormalEventHandlerOverride;
-import com.microsoft.telemetry.Envelope;
 
 import org.junit.After;
 import org.junit.Before;
@@ -42,9 +40,13 @@ public class EventHandlerTests {
         CriticalEventHandlerOverride criticalEventHandlerOverride = new CriticalEventHandlerOverride(new CustomLogger(), filePath);
         NormalEventHandlerOverride normalEventHandlerOverride = new NormalEventHandlerOverride(new CustomLogger(), filePath);
         EventHandler eventHandler = new EventHandler(new ClientTelemetry("test"), new ArrayList<ICllEvents>(), new CustomLogger(), normalEventHandlerOverride, criticalEventHandlerOverride);
-        Envelope event = (Envelope)EventHelper.generateABCEvent();
-        PartAHelper.setDeviceId(event, "0000000000"); // Sample Group 0
-        eventHandler.log(event, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
+        SerializedEvent event = new SerializedEvent();
+        event.setSerializedData(EventHelper.singleGoodJsonEvent);
+        event.setDeviceId("0000000000");  // Sample Group 0
+        event.setSampleRate(SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.SAMPLERATE));
+        event.setPersistence(Cll.EventPersistence.NORMAL);
+        event.setLatency(Cll.EventLatency.NORMAL);
+        eventHandler.log(event);
         assert(normalEventHandlerOverride.eventCount == 1);
     }
 
@@ -54,9 +56,13 @@ public class EventHandlerTests {
         CriticalEventHandlerOverride criticalEventHandlerOverride = new CriticalEventHandlerOverride(new CustomLogger(), filePath);
         NormalEventHandlerOverride normalEventHandlerOverride = new NormalEventHandlerOverride(new CustomLogger(), filePath);
         EventHandler eventHandler = new EventHandler(new ClientTelemetry("test"), new ArrayList<ICllEvents>(), new CustomLogger(), normalEventHandlerOverride, criticalEventHandlerOverride);
-        Envelope event = (Envelope)EventHelper.generateABCEvent();
-        PartAHelper.setDeviceId(event, "000000099"); // Sample Group 53
-        eventHandler.log(event, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
+        SerializedEvent event = new SerializedEvent();
+        event.setSerializedData(EventHelper.singleGoodJsonEvent);
+        event.setDeviceId("000000099"); // Sample Group 53
+        event.setSampleRate(SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.SAMPLERATE));
+        event.setPersistence(Cll.EventPersistence.NORMAL);
+        event.setLatency(Cll.EventLatency.NORMAL);
+        eventHandler.log(event);
         assert(normalEventHandlerOverride.eventCount == 0);
     }
 
@@ -65,15 +71,21 @@ public class EventHandlerTests {
         CriticalEventHandlerOverride criticalEventHandlerOverride = new CriticalEventHandlerOverride(new CustomLogger(), filePath);
         NormalEventHandlerOverride normalEventHandlerOverride = new NormalEventHandlerOverride(new CustomLogger(), filePath);
         EventHandler eventHandler = new EventHandler(new ClientTelemetry("test"), new ArrayList<ICllEvents>(), new CustomLogger(), normalEventHandlerOverride, criticalEventHandlerOverride);
-        Envelope event = (Envelope)EventHelper.generateABCEvent();
-        PartAHelper.setDeviceId(event, "0000000000"); // Sample Group 0
+        SerializedEvent event = new SerializedEvent();
+        event.setSerializedData(EventHelper.singleGoodJsonEvent);
+        event.setDeviceId("0000000000");  // Sample Group 0
+        event.setSampleRate(SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.SAMPLERATE));
+        event.setPersistence(Cll.EventPersistence.NORMAL);
+        event.setLatency(Cll.EventLatency.NORMAL);
 
         for(int i = 0; i < 10; i++) {
-            eventHandler.log(event, Cll.EventPersistence.CRITICAL, Cll.EventLatency.NORMAL);
+            eventHandler.log(event);
         }
 
+        event.setPersistence(Cll.EventPersistence.CRITICAL);
+
         for(int i = 0; i < 10; i++) {
-            eventHandler.log(event, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
+            eventHandler.log(event);
         }
 
         assert(normalEventHandlerOverride.eventCount == 10);
@@ -85,9 +97,13 @@ public class EventHandlerTests {
         CriticalEventHandlerOverride criticalEventHandlerOverride = new CriticalEventHandlerOverride(new CustomLogger(), filePath);
         NormalEventHandlerOverride normalEventHandlerOverride = new NormalEventHandlerOverride(new CustomLogger(), filePath);
         EventHandler eventHandler = new EventHandler(new ClientTelemetry("test"), new ArrayList<ICllEvents>(), new CustomLogger(), normalEventHandlerOverride, criticalEventHandlerOverride);
-        Envelope event = (Envelope)EventHelper.generateABCEvent();
-        PartAHelper.setDeviceId(event, null); // Sample Group null
-        eventHandler.log(event, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
+        SerializedEvent event = new SerializedEvent();
+        event.setSerializedData(EventHelper.singleGoodJsonEvent);
+        event.setDeviceId(null);  // Sample Group 0
+        event.setSampleRate(SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.SAMPLERATE));
+        event.setPersistence(Cll.EventPersistence.NORMAL);
+        event.setLatency(Cll.EventLatency.NORMAL);
+        eventHandler.log(event);
         assert(normalEventHandlerOverride.eventCount == 0);
     }
 }

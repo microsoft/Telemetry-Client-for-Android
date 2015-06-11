@@ -1,6 +1,11 @@
-package com.microsoft.telemetry;
+/*
+ * Generated from CS2Envelope.bond (https://github.com/Microsoft/bond)
+*/
+package com.microsoft.telemetry.cs2;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Map;
+import java.util.List;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.ArrayList;
@@ -23,7 +28,7 @@ public class Envelope implements
     /**
      * Backing field for property Ver.
      */
-    private String ver;
+    private int ver = 1;
     
     /**
      * Backing field for property Name.
@@ -36,19 +41,14 @@ public class Envelope implements
     private String time;
     
     /**
-     * Backing field for property PopSample.
+     * Backing field for property SampleRate.
      */
-    private double popSample = 100.0;
+    private double sampleRate = 100.0;
     
     /**
-     * Backing field for property Epoch.
+     * Backing field for property Seq.
      */
-    private String epoch;
-    
-    /**
-     * Backing field for property SeqNum.
-     */
-    private long seqNum;
+    private String seq;
     
     /**
      * Backing field for property IKey.
@@ -59,6 +59,11 @@ public class Envelope implements
      * Backing field for property Flags.
      */
     private long flags;
+    
+    /**
+     * Backing field for property DeviceId.
+     */
+    private String deviceId;
     
     /**
      * Backing field for property Os.
@@ -81,19 +86,14 @@ public class Envelope implements
     private String appVer;
     
     /**
-     * Backing field for property CV.
+     * Backing field for property UserId.
      */
-    private String cV;
+    private String userId;
     
     /**
      * Backing field for property Tags.
      */
-    private LinkedHashMap<String, String> tags;
-    
-    /**
-     * Backing field for property Ext.
-     */
-    private LinkedHashMap<String, Extension> ext;
+    private Map<String, String> tags;
     
     /**
      * Backing field for property Data.
@@ -101,7 +101,7 @@ public class Envelope implements
     private Base data;
     
     /**
-     * Initializes a new instance of the <see cref="Envelope"/> class.
+     * Initializes a new instance of the Envelope class.
      */
     public Envelope()
     {
@@ -111,14 +111,14 @@ public class Envelope implements
     /**
      * Gets the Ver property.
      */
-    public String getVer() {
+    public int getVer() {
         return this.ver;
     }
     
     /**
      * Sets the Ver property.
      */
-    public void setVer(String value) {
+    public void setVer(int value) {
         this.ver = value;
     }
     
@@ -151,45 +151,31 @@ public class Envelope implements
     }
     
     /**
-     * Gets the PopSample property.
+     * Gets the SampleRate property.
      */
-    public double getPopSample() {
-        return this.popSample;
+    public double getSampleRate() {
+        return this.sampleRate;
     }
     
     /**
-     * Sets the PopSample property.
+     * Sets the SampleRate property.
      */
-    public void setPopSample(double value) {
-        this.popSample = value;
+    public void setSampleRate(double value) {
+        this.sampleRate = value;
     }
     
     /**
-     * Gets the Epoch property.
+     * Gets the Seq property.
      */
-    public String getEpoch() {
-        return this.epoch;
+    public String getSeq() {
+        return this.seq;
     }
     
     /**
-     * Sets the Epoch property.
+     * Sets the Seq property.
      */
-    public void setEpoch(String value) {
-        this.epoch = value;
-    }
-    
-    /**
-     * Gets the SeqNum property.
-     */
-    public long getSeqNum() {
-        return this.seqNum;
-    }
-    
-    /**
-     * Sets the SeqNum property.
-     */
-    public void setSeqNum(long value) {
-        this.seqNum = value;
+    public void setSeq(String value) {
+        this.seq = value;
     }
     
     /**
@@ -218,6 +204,20 @@ public class Envelope implements
      */
     public void setFlags(long value) {
         this.flags = value;
+    }
+    
+    /**
+     * Gets the DeviceId property.
+     */
+    public String getDeviceId() {
+        return this.deviceId;
+    }
+    
+    /**
+     * Sets the DeviceId property.
+     */
+    public void setDeviceId(String value) {
+        this.deviceId = value;
     }
     
     /**
@@ -277,23 +277,23 @@ public class Envelope implements
     }
     
     /**
-     * Gets the CV property.
+     * Gets the UserId property.
      */
-    public String getCV() {
-        return this.cV;
+    public String getUserId() {
+        return this.userId;
     }
     
     /**
-     * Sets the CV property.
+     * Sets the UserId property.
      */
-    public void setCV(String value) {
-        this.cV = value;
+    public void setUserId(String value) {
+        this.userId = value;
     }
     
     /**
      * Gets the Tags property.
      */
-    public LinkedHashMap<String, String> getTags() {
+    public Map<String, String> getTags() {
         if (this.tags == null) {
             this.tags = new LinkedHashMap<String, String>();
         }
@@ -303,25 +303,8 @@ public class Envelope implements
     /**
      * Sets the Tags property.
      */
-    public void setTags(LinkedHashMap<String, String> value) {
+    public void setTags(Map<String, String> value) {
         this.tags = value;
-    }
-    
-    /**
-     * Gets the Ext property.
-     */
-    public LinkedHashMap<String, Extension> getExt() {
-        if (this.ext == null) {
-            this.ext = new LinkedHashMap<String, Extension>();
-        }
-        return this.ext;
-    }
-    
-    /**
-     * Sets the Ext property.
-     */
-    public void setExt(LinkedHashMap<String, Extension> value) {
-        this.ext = value;
     }
     
     /**
@@ -363,9 +346,12 @@ public class Envelope implements
     protected String serializeContent(Writer writer) throws IOException
     {
         String prefix = "";
-        writer.write(prefix + "\"ver\":");
-        writer.write(JsonHelper.convert(this.ver));
-        prefix = ",";
+        if (!(this.ver == 0))
+        {
+            writer.write(prefix + "\"ver\":");
+            writer.write(JsonHelper.convert(this.ver));
+            prefix = ",";
+        }
         
         writer.write(prefix + "\"name\":");
         writer.write(JsonHelper.convert(this.name));
@@ -375,24 +361,17 @@ public class Envelope implements
         writer.write(JsonHelper.convert(this.time));
         prefix = ",";
         
-        if (!(this.popSample == 0.0d))
+        if (this.sampleRate > 0.0d)
         {
-            writer.write(prefix + "\"popSample\":");
-            writer.write(JsonHelper.convert(this.popSample));
+            writer.write(prefix + "\"sampleRate\":");
+            writer.write(JsonHelper.convert(this.sampleRate));
             prefix = ",";
         }
         
-        if (!(this.epoch == null))
+        if (!(this.seq == null))
         {
-            writer.write(prefix + "\"epoch\":");
-            writer.write(JsonHelper.convert(this.epoch));
-            prefix = ",";
-        }
-        
-        if (!(this.seqNum == 0L))
-        {
-            writer.write(prefix + "\"seqNum\":");
-            writer.write(JsonHelper.convert(this.seqNum));
+            writer.write(prefix + "\"seq\":");
+            writer.write(JsonHelper.convert(this.seq));
             prefix = ",";
         }
         
@@ -407,6 +386,13 @@ public class Envelope implements
         {
             writer.write(prefix + "\"flags\":");
             writer.write(JsonHelper.convert(this.flags));
+            prefix = ",";
+        }
+        
+        if (!(this.deviceId == null))
+        {
+            writer.write(prefix + "\"deviceId\":");
+            writer.write(JsonHelper.convert(this.deviceId));
             prefix = ",";
         }
         
@@ -438,10 +424,10 @@ public class Envelope implements
             prefix = ",";
         }
         
-        if (!(this.cV == null))
+        if (!(this.userId == null))
         {
-            writer.write(prefix + "\"cV\":");
-            writer.write(JsonHelper.convert(this.cV));
+            writer.write(prefix + "\"userId\":");
+            writer.write(JsonHelper.convert(this.userId));
             prefix = ",";
         }
         
@@ -449,13 +435,6 @@ public class Envelope implements
         {
             writer.write(prefix + "\"tags\":");
             JsonHelper.writeDictionary(writer, this.tags);
-            prefix = ",";
-        }
-        
-        if (!(this.ext == null))
-        {
-            writer.write(prefix + "\"ext\":");
-            JsonHelper.writeDictionary(writer, this.ext);
             prefix = ",";
         }
         

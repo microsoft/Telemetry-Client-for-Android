@@ -2,7 +2,6 @@ package com.microsoft.cll.Overrides;
 
 import com.microsoft.cll.CriticalEventHandler;
 import com.microsoft.cll.ILogger;
-import com.microsoft.telemetry.IJsonSerializable;
 
 public class CriticalEventHandlerOverride extends CriticalEventHandler {
     public int eventCount;
@@ -12,7 +11,7 @@ public class CriticalEventHandlerOverride extends CriticalEventHandler {
     }
 
     @Override
-    public synchronized void add(IJsonSerializable event) {
+    public synchronized void add(String event) {
         eventCount++;
     }
 }

@@ -1,7 +1,5 @@
 package com.microsoft.cll;
 
-import com.microsoft.telemetry.IJsonSerializable;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -31,10 +29,10 @@ public class CriticalEventHandler extends AbstractHandler
      * @throws Exception An exception if we cannot add
      */
     @Override
-    public synchronized void add(IJsonSerializable event) throws IOException, FileStorage.FileFullException
+    public synchronized void add(String event) throws IOException, FileStorage.FileFullException
     {
         int attempts = 0;
-        while(!canAdd(serializer.serialize(event))) {
+        while(!canAdd(event)) {
 
             // If we don't limit this then we can potentially block a thread forever trying to add
             if(attempts >= SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.MAXCRITICALCANADDATTEMPTS)) {
@@ -54,7 +52,7 @@ public class CriticalEventHandler extends AbstractHandler
         }
 
         fileStorage.add(event);
-        totalStorageUsed.getAndAdd(serializer.serialize(event).length());
+        totalStorageUsed.getAndAdd(event.length());
         fileStorage.flush();
         counter++;
     }

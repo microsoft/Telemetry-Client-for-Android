@@ -6,7 +6,6 @@
 package com.microsoft.cll;
 
 import com.microsoft.telemetry.Base;
-import com.microsoft.telemetry.Envelope;
 import com.microsoft.telemetry.IChannel;
 
 import java.util.ArrayList;
@@ -187,9 +186,8 @@ public class Cll implements IChannel
             return;
         }
 
-        final Envelope eventEnvelope = createEnvelope(event);
-        final PartAFlags partAFlags = new PartAFlags(eventEnvelope);
-        this.eventHandler.log(eventEnvelope, partAFlags.getPersistence(), partAFlags.getLatency());
+        final SerializedEvent serializedEvent = this.partA.populate(event, this.correlationVector.GetValue());
+        this.eventHandler.log(serializedEvent);
     }
 
     /**
@@ -217,6 +215,14 @@ public class Cll implements IChannel
     }
 
     /**
+     * Set's whether we should use the legacy part A fields or not.
+     * @param value True if we should, false if we should not
+     */
+    public void useLagacyCS(boolean value) {
+        partA.useLagacyCS(value);
+    }
+
+    /**
      * Sets the experiment id
      * @param id
      *           The experiment id
@@ -239,21 +245,9 @@ public class Cll implements IChannel
     }
 
     /**
-     * Create the EventEnvelope with the Part A schema
-     *
-     * @param event
-     *            The User specific event
-     */
-    private Envelope createEnvelope(final Base event)
-    {
-        final Envelope eventEnvelope = this.partA.populate(event, this.correlationVector.GetValue());
-        return eventEnvelope;
-    }
-
-    /**
      * enum for the persistence of an event
      */
-    enum EventPersistence
+    public enum EventPersistence
     {
         NORMAL(1),
         CRITICAL(2);
@@ -283,7 +277,7 @@ public class Cll implements IChannel
     /**
      * Enum for the latency of an event
      */
-    enum EventLatency
+    public enum EventLatency
     {
         NORMAL(1),
         REALTIME(2);

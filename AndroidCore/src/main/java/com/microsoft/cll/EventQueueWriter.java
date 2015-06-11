@@ -1,8 +1,5 @@
 package com.microsoft.cll;
 
-import com.microsoft.telemetry.Envelope;
-import com.microsoft.telemetry.IJsonSerializable;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -22,9 +19,8 @@ public class EventQueueWriter implements Runnable {
     private final String TAG = "EventQueueWriter";
     private final List<IStorage> storages;
     private final List<ICllEvents> cllEvents;
-    private final EventSerializer serializer;
     private final EventBatcher batcher;
-    private final IJsonSerializable event;
+    private final SerializedEvent event;
     private final ILogger logger;
     private final ClientTelemetry clientTelemetry;
     private final ScheduledExecutorService executorService;
@@ -44,7 +40,6 @@ public class EventQueueWriter implements Runnable {
         this.logger         = logger;
         this.batcher        = new EventBatcher();
         this.sender         = new EventSender(endpoint, clientTelemetry, logger);
-        this.serializer     = new EventSerializer(logger);
         this.compressor     = new EventCompressor(logger);
         this.event          = null;
         this.executorService= executorService;
@@ -57,12 +52,11 @@ public class EventQueueWriter implements Runnable {
     /**
      * Constructor for a real time event
      */
-    public EventQueueWriter(URL endpoint, IJsonSerializable event, ClientTelemetry clientTelemetry, List<ICllEvents> cllEvents, ILogger logger, ScheduledExecutorService executorService, EventHandler handler, int period) {
+    public EventQueueWriter(URL endpoint, SerializedEvent event, ClientTelemetry clientTelemetry, List<ICllEvents> cllEvents, ILogger logger, ScheduledExecutorService executorService, EventHandler handler, int period) {
         this.cllEvents      = cllEvents;
         this.event          = event;
         this.logger         = logger;
         this.sender         = new EventSender(endpoint, clientTelemetry, logger);
-        this.serializer     = new EventSerializer(logger);
         this.batcher        = null;
         this.storages       = null;
         this.executorService= executorService;
@@ -108,22 +102,19 @@ public class EventQueueWriter implements Runnable {
     /**
      * Sends a real time event by itself
      */
-    protected void sendRealTimeEvent(IJsonSerializable singleEvent) {
-        String serialized = serializer.serialize(singleEvent);
-
+    protected void sendRealTimeEvent(SerializedEvent singleEvent) {
         // Check to see if this single serialized event is greater than MAX_BUFFER_SIZE, if it is we drop it.
-        if (serialized.length() > SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.MAXEVENTSIZEINBYTES)) {
+        if (singleEvent.getSerializedData().length() > SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.MAXEVENTSIZEINBYTES)) {
             return;
         }
 
         try {
-            sender.sendEvent(serialized);
+            sender.sendEvent(singleEvent.getSerializedData());
         } catch (IOException e) {
             // Edge case for real time events that try to send but don't have network.
             // In this case we need to write to disk
             // Force Normal latency so we don't keep looping back to here
-            PartAFlags tags = new PartAFlags((Envelope)singleEvent);
-            handler.log(singleEvent, tags.getPersistence(), Cll.EventLatency.NORMAL);
+            handler.log(singleEvent);
             logger.error(TAG, "Cannot send event");
         }
 

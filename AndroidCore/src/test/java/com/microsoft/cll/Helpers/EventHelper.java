@@ -1,5 +1,6 @@
 package com.microsoft.cll.Helpers;
 
+import com.microsoft.cll.Cll;
 import com.microsoft.cll.CustomLogger;
 import com.microsoft.cll.CustomPartA;
 import com.microsoft.telemetry.IJsonSerializable;
@@ -52,7 +53,7 @@ public class EventHelper {
         helloWorld.setBaseData(mediaUsage);
 
         CustomPartA partA = new CustomPartA(new CustomLogger(), "");
-        return partA.populate(helloWorld, null);
+        return partA.populateEnvelope(helloWorld, null, 0, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
 
     }
 
@@ -64,6 +65,6 @@ public class EventHelper {
         helloWorld.setHelloWorldRating(5);
 
         CustomPartA partA = new CustomPartA(new CustomLogger(), "");
-        return partA.populate(helloWorld, null);
+        return partA.populateEnvelope(helloWorld, null, 0, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
     }
 }
