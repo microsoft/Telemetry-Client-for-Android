@@ -10,6 +10,7 @@ import com.microsoft.telemetry.IChannel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -180,13 +181,17 @@ public class Cll implements IChannel
      */
     public void log(final Base event)
     {
+        log(event, null);
+    }
+
+    public void log(final Base event, Map<String, String> tags) {
         if (!this.isStarted.get())
         {
             this.logger.error(TAG, "Cll must be started before logging events");
             return;
         }
 
-        final SerializedEvent serializedEvent = this.partA.populate(event, this.correlationVector.GetValue());
+        final SerializedEvent serializedEvent = this.partA.populate(event, this.correlationVector.GetValue(), tags);
         this.eventHandler.log(serializedEvent);
     }
 

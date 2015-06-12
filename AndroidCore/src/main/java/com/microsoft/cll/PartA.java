@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Random;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicLong;
@@ -79,19 +80,16 @@ public abstract class PartA {
      *
      * @param base The base event to package in the Envelope
      */
-    public SerializedEvent populate(final Base base, String cV) {
+    public SerializedEvent populate(final Base base, String cV, Map<String, String> tags) {
+        int sampleRate = Integer.parseInt(SettingsStore.getSetting(base, SettingsStore.Settings.SAMPLERATE).toString());
+        Cll.EventPersistence persistence = Cll.EventPersistence.valueOf(SettingsStore.getSetting(base, SettingsStore.Settings.PERSISTENCE).toString().toUpperCase());
+        Cll.EventLatency latency = Cll.EventLatency.valueOf(SettingsStore.getSetting(base, SettingsStore.Settings.LATENCY).toString().toUpperCase());
+
         if(useLagacyCS) {
-            int sampleRate = Integer.parseInt(SettingsStore.getSetting(base, SettingsStore.Settings.SAMPLERATE).toString());
-            Cll.EventPersistence persistence = Cll.EventPersistence.valueOf(SettingsStore.getSetting(base, SettingsStore.Settings.PERSISTENCE).toString().toUpperCase());
-            Cll.EventLatency latency = Cll.EventLatency.valueOf(SettingsStore.getSetting(base, SettingsStore.Settings.LATENCY).toString().toUpperCase());
-            com.microsoft.telemetry.cs2.Envelope envelope = populateLegacyEnvelope(base, cV, sampleRate, persistence, latency);
+            com.microsoft.telemetry.cs2.Envelope envelope = populateLegacyEnvelope(base, cV, sampleRate, persistence, latency, tags);
             return populateSerializedEvent(serializer.serialize(envelope), persistence, latency, envelope.getSampleRate(), envelope.getDeviceId());
         } else {
-            int sampleRate = Integer.parseInt(SettingsStore.getSetting(base, SettingsStore.Settings.SAMPLERATE).toString());
-            Cll.EventPersistence persistence = Cll.EventPersistence.valueOf(SettingsStore.getSetting(base, SettingsStore.Settings.PERSISTENCE).toString().toUpperCase());
-            Cll.EventLatency latency = Cll.EventLatency.valueOf(SettingsStore.getSetting(base, SettingsStore.Settings.LATENCY).toString().toUpperCase());
             Envelope envelope = populateEnvelope(base, cV, sampleRate, persistence, latency);
-
             return populateSerializedEvent(serializer.serialize(envelope), persistence, latency, envelope.getPopSample(), deviceExt.getLocalId());
         }
     }
@@ -117,13 +115,15 @@ public abstract class PartA {
         return envelope;
     }
 
-    public com.microsoft.telemetry.cs2.Envelope populateLegacyEnvelope(final Base base, String cV, int sampleRate, Cll.EventPersistence persistence, Cll.EventLatency latency) {
+    public com.microsoft.telemetry.cs2.Envelope populateLegacyEnvelope(final Base base, String cV, int sampleRate, Cll.EventPersistence persistence, Cll.EventLatency latency, Map<String, String> tags) {
+        if(tags == null) {
+            tags = new HashMap<String, String>();
+        }
 
-        HashMap<String, String> tags = new HashMap<String, String>();
         tags.put("cV", cV);
 
         com.microsoft.telemetry.cs2.Envelope envelope = new com.microsoft.telemetry.cs2.Envelope();
-        envelope.setVer(2);
+        envelope.setVer(1);
         envelope.setTime(getDateTime());
         envelope.setName(base.QualifiedName);
         envelope.setSampleRate(sampleRate);
