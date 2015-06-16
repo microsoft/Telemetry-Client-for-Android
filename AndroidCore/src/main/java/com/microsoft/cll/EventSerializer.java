@@ -17,7 +17,7 @@ public class EventSerializer {
      * @param logger The logger to log with
      */
     public EventSerializer(ILogger logger) {
-        this.logger         = logger;
+        this.logger = logger;
     }
 
     /**

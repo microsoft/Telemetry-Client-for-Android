@@ -237,18 +237,21 @@ public final class JsonHelper {
      * @throws IOException if no handler exists for the type
      */
     private static <T> void writeItem(Writer writer, T item) throws IOException {
-        if (item instanceof String) {
-            writer.write(JsonHelper.convert((String) item));
-        } else if (item instanceof Double) {
-            writer.write(JsonHelper.convert((Double) item));
-        } else if (item instanceof Integer) {
-            writer.write(JsonHelper.convert((Integer) item));
-        } else if (item instanceof Long) {
-            writer.write(JsonHelper.convert((Long) item));
-        } else if (item instanceof IJsonSerializable) {
-            ((IJsonSerializable) item).serialize(writer);
-        } else {
-            throw new IOException("Cannot serialize: " + item.toString());
+        if(item != null) {
+            if (item instanceof String) {
+                writer.write(JsonHelper.convert((String) item));
+            } else if (item instanceof Double) {
+                writer.write(JsonHelper.convert((Double) item));
+            } else if (item instanceof Integer) {
+                writer.write(JsonHelper.convert((Integer) item));
+            } else if (item instanceof Long) {
+                writer.write(JsonHelper.convert((Long) item));
+            } else {
+                throw new IOException("Cannot serialize: " + item.toString());
+            }
+        }
+        else {
+            writer.write("null");
         }
     }
 }
