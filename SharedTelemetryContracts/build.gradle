@@ -53,8 +53,8 @@ bintray {
 
     pkg {
         repo = 'maven'
-        name = projectContractsName
-        desc = projectContractsDesc
+        name = projectName
+        desc = projectDesc
         websiteUrl = siteUrl
         issueTrackerUrl = siteUrl + '/issues'
         vcsUrl = gitUrl
