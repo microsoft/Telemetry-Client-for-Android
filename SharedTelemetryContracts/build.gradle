@@ -42,6 +42,39 @@ status = 'Release'
 version=projectVersion
 group = projectGroup
 
+install {
+    repositories.mavenInstaller {
+        pom {
+            project {
+                packaging 'jar'
+                name projectName
+                description projectDesc
+                url gitUrl
+
+                licenses {
+                    license {
+                        name 'MIT'
+                        url 'http://opensource.org/licenses/MIT'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'asimovteam'
+                        email 'reachcll@microsoft.com'
+                    }
+                }
+
+                scm {
+                    connection gitUrl
+                    developerConnection gitUrl
+                    url gitUrl
+                }
+            }
+        }
+    }
+}
+
 bintray {
     user = System.getenv("bintrayUser")
     key = System.getenv("bintrayKey")

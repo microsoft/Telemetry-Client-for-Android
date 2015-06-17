@@ -22,6 +22,7 @@ sourceSets {
 dependencies {
     compile 'org.json:json:20140107'
     compile project(':SharedTelemetryContracts')
+
     testCompile('junit:junit:4.12')
     testCompile('org.powermock:powermock-module-junit4:1.6.1')
     testCompile('org.powermock:powermock-api-easymock:1.6.1')
@@ -52,6 +53,39 @@ artifacts {
 status = 'Release'
 group = projectGroup
 version=projectVersion
+
+install {
+    repositories.mavenInstaller {
+        pom {
+            project {
+                packaging 'jar'
+                name projectName
+                description projectDesc
+                url gitUrl
+
+                licenses {
+                    license {
+                        name 'MIT'
+                        url 'http://opensource.org/licenses/MIT'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'asimovteam'
+                        email 'reachcll@microsoft.com'
+                    }
+                }
+
+                scm {
+                    connection gitUrl
+                    developerConnection gitUrl
+                    url gitUrl
+                }
+            }
+        }
+    }
+}
 
 bintray {
     user = System.getenv("bintrayUser")
