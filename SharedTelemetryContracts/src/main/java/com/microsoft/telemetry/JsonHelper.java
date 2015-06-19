@@ -246,6 +246,8 @@ public final class JsonHelper {
                 writer.write(JsonHelper.convert((Integer) item));
             } else if (item instanceof Long) {
                 writer.write(JsonHelper.convert((Long) item));
+            } else if (item instanceof IJsonSerializable) {
+                ((IJsonSerializable) item).serialize(writer);
             } else {
                 throw new IOException("Cannot serialize: " + item.toString());
             }
