@@ -3,7 +3,6 @@ package com.microsoft.cll;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -14,6 +13,8 @@ import java.net.URLConnection;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
+
+import javax.net.ssl.HttpsURLConnection;
 
 /**
  * This is a base class for all calls to OneSettings
@@ -46,11 +47,9 @@ public abstract class AbstractSettings {
 
         URLConnection connection = null;
         HttpsURLConnection httpConnection;
-        try
-        {
+        try {
             connection = url.openConnection();
-            if (connection instanceof HttpsURLConnection)
-            {
+            if (connection instanceof HttpsURLConnection) {
                 clientTelemetry.IncrementSettingsHttpAttempts();
                 httpConnection = (HttpsURLConnection) connection;
                 httpConnection.setConnectTimeout(SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.HTTPTIMEOUTINTERVAL));
@@ -62,9 +61,9 @@ public abstract class AbstractSettings {
                 long finish = Calendar.getInstance(TimeZone.getTimeZone("UTC"), Locale.US).getTimeInMillis();
                 long diff = finish - start;
                 clientTelemetry.SetAvgSettingsResponseLatencyMs((int) diff);
-                clientTelemetry.SetMaxSettingsResponseLatencyMs((int)diff);
+                clientTelemetry.SetMaxSettingsResponseLatencyMs((int) diff);
 
-                if(httpConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                if (httpConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                     clientTelemetry.IncrementSettingsHttpFailures();
                     return null;
                 }
@@ -74,8 +73,7 @@ public abstract class AbstractSettings {
                         new InputStreamReader(httpConnection.getInputStream()));
                 StringBuilder result = new StringBuilder();
                 String line;
-                while ((line = input.readLine()) != null)
-                {
+                while ((line = input.readLine()) != null) {
                     result.append(line);
                 }
 
@@ -87,18 +85,14 @@ public abstract class AbstractSettings {
                 connection = null;
                 return new JSONObject(result.toString());
             }
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             logger.error(TAG, e.getMessage());
             clientTelemetry.IncrementSettingsHttpFailures();
-        }
-        catch (JSONException e)
-        {
+        } catch (JSONException e) {
             logger.error(TAG, e.getMessage());
-        }
-        finally
-        {
+        }catch (Exception e) {
+            logger.error(TAG, e.getMessage());
+        } finally {
             // close connection if it's still open
             if (connection != null)
             {
@@ -109,6 +103,7 @@ public abstract class AbstractSettings {
                 catch (Exception e)
                 {
                     // swallow exception
+                    logger.error(TAG, e.getMessage());
                 }
             }
         }

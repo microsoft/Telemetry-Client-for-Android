@@ -41,7 +41,7 @@ public class HostSettings extends AbstractSettings {
                     value = value.toUpperCase();
                     key = key.toUpperCase();
 
-                    SettingsStore.updateAppSetting(key, value);
+                    SettingsStore.updateHostSetting(key, value);
                 }
             } else {
                 logger.info(TAG, "Json result did not contain a \"settings\" field!");

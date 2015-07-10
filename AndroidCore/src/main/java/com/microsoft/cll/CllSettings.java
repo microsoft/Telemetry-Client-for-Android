@@ -48,7 +48,7 @@ public class CllSettings extends AbstractSettings
                     String value = jsonSettings.getString(key);
 
                     try {
-                        SettingsStore.cllSettings.put(SettingsStore.Settings.valueOf(key), value);
+                        SettingsStore.updateCllSetting(SettingsStore.Settings.valueOf(key), value);
                         logger.info(TAG, "Json Settings, Key: " + key + " Value: " + value);
                     }catch (Exception e) {
                         logger.warn(TAG, "Key: " + key + " was not found");

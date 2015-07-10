@@ -126,6 +126,7 @@ public class EventHandler extends ScheduledWorker
                     logger.warn(TAG, "No space on disk to store events");
                     return false;
                 }
+
                 break;
             default:
                 logger.error(TAG, "Unknown persistence");

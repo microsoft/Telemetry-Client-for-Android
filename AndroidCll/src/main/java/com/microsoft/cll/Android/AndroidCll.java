@@ -18,8 +18,10 @@ import java.util.Map;
  */
 public class AndroidCll extends Cll implements SettingsStore.UpdateListener{
     private static final String cllName = "AndroidCLL";
-    private final String sharedPreferencesName = "AndroidCllSharedPreferences";
-    private final SharedPreferences preferences;
+    private final String sharedCllPreferencesName = "AndroidCllSettingsSharedPreferences";
+    private final String sharedHostPreferencesName = "AndroidHostSettingsSharedPreferences";
+    private final SharedPreferences cllPreferences;
+    private final SharedPreferences hostPreferences;
 
     /**
      * Create a Cll for Android
@@ -41,10 +43,11 @@ public class AndroidCll extends Cll implements SettingsStore.UpdateListener{
         this.eventHandler        = new EventHandler(clientTelemetry, cllEvents, logger, context.getFilesDir().getPath().toString());
 
         this.cllEvents.add(new CllEvents(this.partA, this.clientTelemetry, this));
-        this.preferences = context.getSharedPreferences(sharedPreferencesName, 0);
+        this.cllPreferences = context.getSharedPreferences(sharedCllPreferencesName, 0);
+        this.hostPreferences = context.getSharedPreferences(sharedHostPreferencesName, 0);
 
-        setSettingsStoreValues();
         SettingsStore.setUpdateListener(this);
+        setSettingsStoreValues();
     }
 
     /**
@@ -56,16 +59,28 @@ public class AndroidCll extends Cll implements SettingsStore.UpdateListener{
     }
 
     @Override
-    public void OnUpdate(String settingName, String settingValue) {
-        SharedPreferences.Editor editor = preferences.edit();
+    public void OnHostSettingUpdate(String settingName, String settingValue) {
+        SharedPreferences.Editor editor = hostPreferences.edit();
+        editor.putString(settingName, settingValue);
+        editor.apply();
+    }
+
+    @Override
+    public void OnCllSettingUpdate(String settingName, String settingValue) {
+        SharedPreferences.Editor editor = cllPreferences.edit();
         editor.putString(settingName, settingValue);
         editor.apply();
     }
 
     private void setSettingsStoreValues() {
-        Map<String, String> settings = (Map<String, String>) preferences.getAll();
+        Map<String, String> settings = (Map<String, String>) cllPreferences.getAll();
         for(Map.Entry<String, String> setting : settings.entrySet()) {
-            SettingsStore.updateAppSetting(setting.getKey(), setting.getValue());
+            SettingsStore.updateCllSetting(SettingsStore.Settings.valueOf(setting.getKey()), setting.getValue());
+        }
+
+        settings = (Map<String, String>) hostPreferences.getAll();
+        for(Map.Entry<String, String> setting : settings.entrySet()) {
+            SettingsStore.updateHostSetting(setting.getKey(), setting.getValue());
         }
     }
 

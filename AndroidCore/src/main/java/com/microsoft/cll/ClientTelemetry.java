@@ -1,13 +1,13 @@
 package com.microsoft.cll;
 
-import Microsoft.Android.LoggingLibrary.Snapshot;
-import Ms.Telemetry.ClientSnapshot;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+
+import Microsoft.Android.LoggingLibrary.Snapshot;
+import Ms.Telemetry.ClientSnapshot;
 
 /**
  * Captures telemetry on how the cll is being used

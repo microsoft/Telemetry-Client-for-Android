@@ -11,7 +11,7 @@ public class SettingsStore {
     private static HashMap<String, String> hostEventSettings = new HashMap<String, String>();
     protected static HashMap<Settings, Object> cllSettings = new HashMap<Settings, Object>();
     private static UpdateListener updateListener;
-    protected enum Settings {
+    public enum Settings {
         SYNCREFRESHINTERVAL,
         QUEUEDRAININTERVAL,
         SNAPSHOTSCHEDULEINTERVAL,
@@ -71,12 +71,22 @@ public class SettingsStore {
         SettingsStore.updateListener = updateListener;
     }
 
-    public static void updateAppSetting(String settingName, String settingValue) {
-        // Only perform the update action is the setting's value has changed or isn't present
+    public static void updateHostSetting(String settingName, String settingValue) {
+        // Only perform the update action if the setting's value isn't present or has changed
         if(hostEventSettings.get(settingName) == null || !hostEventSettings.get(settingName).equals(settingValue)) {
             hostEventSettings.put(settingName, settingValue);
             if(updateListener != null) {
-                updateListener.OnUpdate(settingName, settingValue);
+                updateListener.OnHostSettingUpdate(settingName, settingValue);
+            }
+        }
+    }
+
+    public static void updateCllSetting(SettingsStore.Settings settingName, String settingValue) {
+        // Only perform the update action if the setting's value has changed
+        if(!cllSettings.get(settingName).equals(settingValue)) {
+            SettingsStore.cllSettings.put(settingName, settingValue);
+            if(updateListener != null) {
+                updateListener.OnCllSettingUpdate(settingName.toString(), settingValue);
             }
         }
     }
@@ -144,11 +154,12 @@ public class SettingsStore {
      * @param settingName
      * @return
      */
-    private static Object getDefaultSetting(SettingsStore.Settings settingName) {
+    public static Object getDefaultSetting(SettingsStore.Settings settingName) {
         return SettingsStore.cllSettings.get(settingName);
     }
 
     public interface UpdateListener {
-        void OnUpdate(String settingName, String SettingValue);
+        void OnHostSettingUpdate(String settingName, String SettingValue);
+        void OnCllSettingUpdate(String settingName, String SettingValue);
     }
 }
