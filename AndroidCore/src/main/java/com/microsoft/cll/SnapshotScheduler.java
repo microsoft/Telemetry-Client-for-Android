@@ -10,11 +10,11 @@ import Microsoft.Android.LoggingLibrary.Snapshot;
  */
 public class SnapshotScheduler extends ScheduledWorker {
     private final String TAG = "SnapshotScheduler";
-    private final Cll cll;
+    private final ICll cll;
     private final ClientTelemetry clientTelemetry;
     private final ILogger logger;
 
-    public SnapshotScheduler(ClientTelemetry clientTelemetry, ILogger logger, Cll cll) {
+    public SnapshotScheduler(ClientTelemetry clientTelemetry, ILogger logger, ICll cll) {
         super(SettingsStore.getCllSettingsAsLong(SettingsStore.Settings.SNAPSHOTSCHEDULEINTERVAL));
         this.cll = cll;
         this.clientTelemetry = clientTelemetry;

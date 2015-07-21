@@ -8,10 +8,24 @@ import android.util.Log;
 public class AndroidLogger implements ILogger {
     private Verbosity verbosity;
 
+    private static AndroidLogger INSTANCE;
+    private static Object InstanceLock = new Object();
+
+    public static ILogger getInstance() {
+        if(INSTANCE == null) {
+            synchronized (InstanceLock) {
+                if(INSTANCE == null) {
+                    INSTANCE = new AndroidLogger();
+                }
+            }
+        }
+        return INSTANCE;
+    }
+
     /**
      * Create an android logger with the default verbosity of none
      */
-    public AndroidLogger() {
+    private AndroidLogger() {
         setVerbosity(Verbosity.NONE);
     }
 

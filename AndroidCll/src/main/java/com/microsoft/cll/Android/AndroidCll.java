@@ -5,9 +5,7 @@ import android.content.SharedPreferences;
 
 import com.microsoft.cll.AndroidLogger;
 import com.microsoft.cll.Cll;
-import com.microsoft.cll.CllEvents;
-import com.microsoft.cll.EventHandler;
-import com.microsoft.cll.ICllEvents;
+import com.microsoft.cll.PartA;
 import com.microsoft.cll.SettingsStore;
 import com.microsoft.telemetry.IChannel;
 
@@ -16,46 +14,29 @@ import java.util.Map;
 /**
  * This is the main class used for logging events.
  */
-public class AndroidCll extends Cll implements SettingsStore.UpdateListener{
+public class AndroidCll extends Cll implements SettingsStore.UpdateListener {
     private static final String cllName = "AndroidCLL";
     private final String sharedCllPreferencesName = "AndroidCllSettingsSharedPreferences";
     private final String sharedHostPreferencesName = "AndroidHostSettingsSharedPreferences";
     private final SharedPreferences cllPreferences;
     private final SharedPreferences hostPreferences;
-
-    /**
-     * Create a Cll for Android
-     * @param app The application context
-     */
-    public AndroidCll(Context app)
-    {
-        this("", app);
-    }
-
     /**
      * Create a Cll for Android
      * @param iKey Your iKey
      * @param context The application context
      */
     public AndroidCll(String iKey, Context context) {
-        super(iKey, new AndroidLogger(), cllName);
-        this.partA               = new AndroidPartA(logger, iKey, context);
-        this.eventHandler        = new EventHandler(clientTelemetry, cllEvents, logger, context.getFilesDir().getPath().toString());
+        this(iKey, context, new AndroidPartA(AndroidLogger.getInstance(), iKey, context));
+    }
 
-        this.cllEvents.add(new CllEvents(this.partA, this.clientTelemetry, this));
+    private AndroidCll(String iKey, Context context, PartA partA) {
+        super(iKey, AndroidLogger.getInstance(), cllName, context.getFilesDir().getPath().toString(), partA);
+
         this.cllPreferences = context.getSharedPreferences(sharedCllPreferencesName, 0);
         this.hostPreferences = context.getSharedPreferences(sharedHostPreferencesName, 0);
 
         SettingsStore.setUpdateListener(this);
         setSettingsStoreValues();
-    }
-
-    /**
-     * Subscribe to cll events
-     * @param cllEvents your cll event object which we will callback on when an event occurs
-     */
-    public void SubscribeCllEvents(ICllEvents cllEvents) {
-        this.cllEvents.add(cllEvents);
     }
 
     @Override
