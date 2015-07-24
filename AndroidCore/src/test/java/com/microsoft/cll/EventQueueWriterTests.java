@@ -46,7 +46,7 @@ public class EventQueueWriterTests {
     public void sendRealTimEvent() {
         SerializedEvent serializedEvent = new SerializedEvent();
         serializedEvent.setSerializedData(EventHelper.singleGoodJsonEvent);
-        EventQueueWriter eventQueueWriter = new EventQueueWriter(url, serializedEvent, new ClientTelemetry("test"), new ArrayList<ICllEvents>(), new CustomLogger(), null, null, 1);
+        EventQueueWriter eventQueueWriter = new EventQueueWriter(url, serializedEvent, new ClientTelemetry("test"), new ArrayList<ICllEvents>(), new CustomLogger(), null, null);
         eventQueueWriter.setSender(eventSenderOverride);
         eventQueueWriter.run();
         assert(eventSenderOverride.getNumberOfEventsAccepted() == 1);
@@ -66,7 +66,7 @@ public class EventQueueWriterTests {
         ArrayList<IStorage> storages = new ArrayList<IStorage>();
         storages.add(fs);
 
-        EventQueueWriter eventQueueWriter = new EventQueueWriter(url, storages, new ClientTelemetry("test"), new ArrayList<ICllEvents>(), new CustomLogger(), scheduledExecutorService, 1);
+        EventQueueWriter eventQueueWriter = new EventQueueWriter(url, storages, new ClientTelemetry("test"), new ArrayList<ICllEvents>(), new CustomLogger(), scheduledExecutorService);
         eventQueueWriter.setSender(eventSenderOverride);
         eventQueueWriter.run();
 
@@ -92,11 +92,11 @@ public class EventQueueWriterTests {
 
         eventSenderOverride.disableNetwork = true;
 
-        EventQueueWriter eventQueueWriter = new EventQueueWriter(url, storages, new ClientTelemetry("test"), new ArrayList<ICllEvents>(), new CustomLogger(), scheduledExecutorService, 1);
+        EventQueueWriter eventQueueWriter = new EventQueueWriter(url, storages, new ClientTelemetry("test"), new ArrayList<ICllEvents>(), new CustomLogger(), scheduledExecutorService);
         eventQueueWriter.setSender(eventSenderOverride);
         scheduledExecutorService.submit(eventQueueWriter);
         try {
-            Thread.sleep(10000);
+            Thread.sleep(65000);
         }catch (Exception e) {}
 
         // Ensure there was at least one callback

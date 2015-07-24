@@ -63,6 +63,12 @@ public class EventHandler extends ScheduledWorker
             nextExecution = executor.scheduleAtFixedRate(this, interval, interval, TimeUnit.SECONDS);
         }
 
+        // If the next (normal periodic) scheduled drain is starting and we have a back-off retry scheduled future set, return and let the future handle sending
+        if(EventQueueWriter.future != null) {
+            logger.info(TAG, "Retry logic in progress, skipping normal send");
+            return;
+        }
+
         send();
     }
 
@@ -87,7 +93,7 @@ public class EventHandler extends ScheduledWorker
 
         // If real time don't queue just send, unless the send fails, then queue
         if(event.getLatency() == Cll.EventLatency.REALTIME && !isPaused) {
-            boolean result = startEventQueueWriter(new EventQueueWriter(endpoint, event, clientTelemetry, cllEvents, logger, executor, this, 1));
+            boolean result = startEventQueueWriter(new EventQueueWriter(endpoint, event, clientTelemetry, cllEvents, logger, executor, this));
             if(result == true) {
                 return true;
             }
@@ -101,7 +107,7 @@ public class EventHandler extends ScheduledWorker
      * @param event The event to store
      * @return Whether we successfully added the event to storage
      */
-    private boolean addToStorage(SerializedEvent event)
+    protected boolean addToStorage(SerializedEvent event)
     {
         switch (event.getPersistence()) {
             case NORMAL:
@@ -232,7 +238,7 @@ public class EventHandler extends ScheduledWorker
         }
 
         if(storages != null && storages.size() != 0) {
-            return startEventQueueWriter(new EventQueueWriter(endpoint, storages, clientTelemetry, cllEvents, logger, executor, 1));
+            return startEventQueueWriter(new EventQueueWriter(endpoint, storages, clientTelemetry, cllEvents, logger, executor));
         }
 
         return true;

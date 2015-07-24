@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -28,13 +29,13 @@ public class EventQueueWriter implements Runnable {
     private List<IStorage> removedStorages;
     private EventCompressor compressor;
     private EventHandler handler;
-    private int period;
     private URL endpoint;
+    private int[] retryIntervals = {10, 20, 40, 60};
 
     /**
      * Constructor for a queue of events
      */
-    public EventQueueWriter(URL endpoint, List<IStorage> storages, ClientTelemetry clientTelemetry, List<ICllEvents> cllEvents, ILogger logger, ScheduledExecutorService executorService, int period) {
+    public EventQueueWriter(URL endpoint, List<IStorage> storages, ClientTelemetry clientTelemetry, List<ICllEvents> cllEvents, ILogger logger, ScheduledExecutorService executorService) {
         this.cllEvents      = cllEvents;
         this.storages       = storages;
         this.logger         = logger;
@@ -44,7 +45,6 @@ public class EventQueueWriter implements Runnable {
         this.event          = null;
         this.executorService= executorService;
         this.clientTelemetry= clientTelemetry;
-        this.period         = period;
         this.endpoint       = endpoint;
         this.removedStorages= new ArrayList<IStorage>();
     }
@@ -52,7 +52,7 @@ public class EventQueueWriter implements Runnable {
     /**
      * Constructor for a real time event
      */
-    public EventQueueWriter(URL endpoint, SerializedEvent event, ClientTelemetry clientTelemetry, List<ICllEvents> cllEvents, ILogger logger, ScheduledExecutorService executorService, EventHandler handler, int period) {
+    public EventQueueWriter(URL endpoint, SerializedEvent event, ClientTelemetry clientTelemetry, List<ICllEvents> cllEvents, ILogger logger, ScheduledExecutorService executorService, EventHandler handler) {
         this.cllEvents      = cllEvents;
         this.event          = event;
         this.logger         = logger;
@@ -62,7 +62,6 @@ public class EventQueueWriter implements Runnable {
         this.executorService= executorService;
         this.clientTelemetry= clientTelemetry;
         this.handler        = handler;
-        this.period         = period;
         this.endpoint       = endpoint;
 
         clientTelemetry.IncrementEventsQueuedForUpload();
@@ -77,15 +76,11 @@ public class EventQueueWriter implements Runnable {
         logger.info(TAG, "Starting upload");
 
         // Send real time event
+        // This must occur before we check for running, otherwise if a normal send is running
+        // we might drop this event.
         if(storages == null) {
             sendRealTimeEvent(event);
             return;
-        }
-
-        // If the next (normal periodic) scheduled drain is starting and we have a back-off retry scheduled future set, cancel it.
-        if(this.period == 1 && future != null) {
-            logger.info(TAG, "Canceling future sender");
-            future.cancel(false);
         }
 
         // Send events with normal persistence
@@ -114,8 +109,8 @@ public class EventQueueWriter implements Runnable {
             // Edge case for real time events that try to send but don't have network.
             // In this case we need to write to disk
             // Force Normal latency so we don't keep looping back to here
-            handler.log(singleEvent);
             logger.error(TAG, "Cannot send event");
+            handler.addToStorage(singleEvent);
         }
 
         for(ICllEvents event : cllEvents) {
@@ -171,6 +166,9 @@ public class EventQueueWriter implements Runnable {
                     {
                         storage.close();
                         return;
+                    } else {
+                        // Stop retry logic on successful send
+                        future = null;
                     }
                 }
             }
@@ -182,6 +180,9 @@ public class EventQueueWriter implements Runnable {
             {
                 storage.close();
                 return;
+            } else {
+                // Stop retry logic on successful send
+                future = null;
             }
 
             storage.discard();
@@ -212,18 +213,15 @@ public class EventQueueWriter implements Runnable {
             }
         } catch (IOException e) {
             logger.error(TAG, "Cannot send event: " + e.getMessage());
-            int newPeriod = period*2;
-            if(newPeriod > SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.MAXRETRYPERIOD)) {
-                // The next scheduled drain is coming soon (~2.5 min so going higher exponentially won't help)
-                return false;
-            }
+            Random random = new Random();
+            int interval = retryIntervals[random.nextInt(retryIntervals.length - 1)];
 
             // If we don't remove these then on next call the drain method will end up creating a new empty file by this name.
             storages.removeAll(removedStorages);
 
-            EventQueueWriter r = new EventQueueWriter(endpoint, storages, clientTelemetry, cllEvents, logger, executorService, newPeriod);
-            r.setSender(sender);
-            future = executorService.schedule(r, newPeriod, TimeUnit.SECONDS);
+            EventQueueWriter eventQueueWriter = new EventQueueWriter(endpoint, storages, clientTelemetry, cllEvents, logger, executorService);
+            eventQueueWriter.setSender(sender);
+            future = executorService.schedule(eventQueueWriter, interval, TimeUnit.SECONDS);
             return false; // If we run into an error sending events we just return. This ensures we don't lose events
         }
 
