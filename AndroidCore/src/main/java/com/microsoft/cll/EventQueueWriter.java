@@ -30,7 +30,7 @@ public class EventQueueWriter implements Runnable {
     private EventCompressor compressor;
     private EventHandler handler;
     private URL endpoint;
-    private int[] retryIntervals = {10, 20, 40, 60};
+    private int power;
 
     /**
      * Constructor for a queue of events
@@ -47,6 +47,7 @@ public class EventQueueWriter implements Runnable {
         this.clientTelemetry= clientTelemetry;
         this.endpoint       = endpoint;
         this.removedStorages= new ArrayList<IStorage>();
+        this.power          = 1;
     }
 
     /**
@@ -63,6 +64,7 @@ public class EventQueueWriter implements Runnable {
         this.clientTelemetry= clientTelemetry;
         this.handler        = handler;
         this.endpoint       = endpoint;
+        this.power          = 1;
 
         clientTelemetry.IncrementEventsQueuedForUpload();
     }
@@ -169,6 +171,7 @@ public class EventQueueWriter implements Runnable {
                     } else {
                         // Stop retry logic on successful send
                         future = null;
+                        power = 1;
                     }
                 }
             }
@@ -183,6 +186,7 @@ public class EventQueueWriter implements Runnable {
             } else {
                 // Stop retry logic on successful send
                 future = null;
+                power = 1;
             }
 
             storage.discard();
@@ -213,8 +217,8 @@ public class EventQueueWriter implements Runnable {
             }
         } catch (IOException e) {
             logger.error(TAG, "Cannot send event: " + e.getMessage());
-            Random random = new Random();
-            int interval = retryIntervals[random.nextInt(retryIntervals.length - 1)];
+
+            int interval = generateBackoffInterval();
 
             // If we don't remove these then on next call the drain method will end up creating a new empty file by this name.
             storages.removeAll(removedStorages);
@@ -226,5 +230,25 @@ public class EventQueueWriter implements Runnable {
         }
 
         return true;
+    }
+
+    /**
+     * Generates a random backoff interval using k*b^p.
+     * k is a constant we multiply by
+     * b is the base which we raise to a power
+     * p is the power we raise to. where p is between 0..n where n increases everytime we fail unless increaseing it would put us over the maxretryperiod.
+     * @return A retry interval
+     */
+    int generateBackoffInterval() {
+        Random random = new Random();
+        int interval = (int) (SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.CONSTANTFORRETRYPERIOD)
+                * Math.pow(SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.BASERETRYPERIOD), random.nextInt(power)));
+
+        // Increment the power if it won't put us over the max retry interval
+        if(SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.CONSTANTFORRETRYPERIOD)
+                * Math.pow(SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.BASERETRYPERIOD), power) <= SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.MAXRETRYPERIOD)) {
+            power++;
+        }
+        return interval;
     }
 }

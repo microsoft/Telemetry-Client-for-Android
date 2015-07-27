@@ -102,4 +102,41 @@ public class EventQueueWriterTests {
         // Ensure there was at least one callback
         assert(eventSenderOverride.getNumberOfSendAttempts() > 1);
     }
+
+    @Test
+    public void testBackoffInterval() {
+        EventQueueWriter eventQueueWriter = new EventQueueWriter(url, null, new ClientTelemetry("test"), new ArrayList<ICllEvents>(), new CustomLogger(), null);
+        int defaultConstant = SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.CONSTANTFORRETRYPERIOD);
+        int defaultBase = SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.BASERETRYPERIOD);
+        int max = SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.MAXRETRYPERIOD);
+        int interval = eventQueueWriter.generateBackoffInterval();
+
+        assert (interval == defaultConstant*Math.pow(defaultBase, 0));
+
+        interval = eventQueueWriter.generateBackoffInterval();
+        assert (interval == defaultConstant*Math.pow(defaultBase, 0)
+                || interval == defaultConstant*Math.pow(defaultBase, 1));
+
+        interval = eventQueueWriter.generateBackoffInterval();
+        assert (interval == defaultConstant*Math.pow(defaultBase, 0)
+                || interval == defaultConstant*Math.pow(defaultBase, 1)
+                || interval == defaultConstant*Math.pow(defaultBase, 2));
+
+        interval = eventQueueWriter.generateBackoffInterval();
+        assert (interval == defaultConstant*Math.pow(defaultBase, 0)
+                || interval == defaultConstant*Math.pow(defaultBase, 1)
+                || interval == defaultConstant*Math.pow(defaultBase, 2)
+                || interval == defaultConstant*Math.pow(defaultBase, 3));
+
+        interval = eventQueueWriter.generateBackoffInterval();
+        assert (interval == defaultConstant*Math.pow(defaultBase, 0)
+                || interval == defaultConstant*Math.pow(defaultBase, 1)
+                || interval == defaultConstant*Math.pow(defaultBase, 2)
+                || interval == defaultConstant*Math.pow(defaultBase, 3)
+                || interval == defaultConstant*Math.pow(defaultBase, 4));
+
+        for(int i = 0; i < 50; i++) {
+            assert (eventQueueWriter.generateBackoffInterval() < max);
+        }
+    }
 }

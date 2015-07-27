@@ -27,26 +27,30 @@ public class SettingsStore {
         MAXCORRELATIONVECTORLENGTH,
         MAXCRITICALCANADDATTEMPTS,
         MAXRETRYPERIOD,
+        BASERETRYPERIOD,
+        CONSTANTFORRETRYPERIOD,
         NORMALEVENTMEMORYQUEUESIZE,
         CLLSETTINGSURL
     }
 
     static {
-        cllSettings.put(Settings.SYNCREFRESHINTERVAL, 30 * 60);                             // Interval in seconds that we sync settings
-        cllSettings.put(Settings.QUEUEDRAININTERVAL, 10);                                // Interval in seconds that we empty the queue
-        cllSettings.put(Settings.SNAPSHOTSCHEDULEINTERVAL, 10 * 60);                             // Interval in seconds that we empty the queue
-        cllSettings.put(Settings.MAXEVENTSIZEINBYTES, 64000);                             // Limit of post size in bytes
-        cllSettings.put(Settings.MAXEVENTSPERPOST, 500);                               // Max events supported per post
-        cllSettings.put(Settings.SAMPLERATE, 10);                                // Sample Rate is a percentage
-        cllSettings.put(Settings.MAXFILESSPACE, 50 * 1024 * 1024);                      // This is the maximum amount of storage space we will use for files
-        cllSettings.put(Settings.PERSISTENCE, Cll.EventPersistence.NORMAL);       // The default persistence for events
-        cllSettings.put(Settings.LATENCY, Cll.EventLatency.NORMAL);           // The default latency for events
+        cllSettings.put(Settings.SYNCREFRESHINTERVAL, 30 * 60);                     // Interval in seconds that we sync settings
+        cllSettings.put(Settings.QUEUEDRAININTERVAL, 10);                           // Interval in seconds that we empty the queue
+        cllSettings.put(Settings.SNAPSHOTSCHEDULEINTERVAL, 10 * 60);                // Interval in seconds that we empty the queue
+        cllSettings.put(Settings.MAXEVENTSIZEINBYTES, 64000);                       // Limit of post size in bytes
+        cllSettings.put(Settings.MAXEVENTSPERPOST, 500);                            // Max events supported per post
+        cllSettings.put(Settings.SAMPLERATE, 10);                                   // Sample Rate is a percentage
+        cllSettings.put(Settings.MAXFILESSPACE, 50 * 1024 * 1024);                  // This is the maximum amount of storage space we will use for files
+        cllSettings.put(Settings.PERSISTENCE, Cll.EventPersistence.NORMAL);         // The default persistence for events
+        cllSettings.put(Settings.LATENCY, Cll.EventLatency.NORMAL);                 // The default latency for events
         cllSettings.put(Settings.UPLOADENABLED, true);                              // Master control to turn off event upload in case of emergency
         cllSettings.put(Settings.HTTPTIMEOUTINTERVAL, 5000);
         cllSettings.put(Settings.THREADSTOUSEWITHEXECUTOR, 3);
         cllSettings.put(Settings.MAXCORRELATIONVECTORLENGTH, 63);
         cllSettings.put(Settings.MAXCRITICALCANADDATTEMPTS, 5);
-        cllSettings.put(Settings.MAXRETRYPERIOD, 256);
+        cllSettings.put(Settings.MAXRETRYPERIOD, 60);
+        cllSettings.put(Settings.BASERETRYPERIOD, 2);
+        cllSettings.put(Settings.CONSTANTFORRETRYPERIOD, 3);
         cllSettings.put(Settings.NORMALEVENTMEMORYQUEUESIZE, 10);
         cllSettings.put(Settings.CLLSETTINGSURL, "https://settings.data.microsoft.com/settings/v2.0/androidLL/app");
     }
