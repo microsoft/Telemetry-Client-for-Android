@@ -31,18 +31,18 @@ public class SingletonCll implements ICll, IChannel {
     private final AtomicBoolean isStarted;
 
     private ScheduledExecutorService executor;
-    private static SingletonCll INSTANCE;
+    private static SingletonCll Instance;
     private static Object InstanceLock = new Object();
 
     public static ICll getInstance(String iKey, ILogger logger, String cllName, String eventDir, PartA partA) {
-        if(INSTANCE == null) {
+        if(Instance == null) {
             synchronized (InstanceLock) {
-                if(INSTANCE == null) {
-                    INSTANCE = new SingletonCll(iKey, logger, cllName, eventDir, partA);
+                if(Instance == null) {
+                    Instance = new SingletonCll(iKey, logger, cllName, eventDir, partA);
                 }
             }
         }
-        return INSTANCE;
+        return Instance;
     }
 
     /**
