@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class EventQueueWriter implements Runnable {
     protected static AtomicBoolean running = new AtomicBoolean(false);
     protected static ScheduledFuture future;
+    protected static int power = 1;
 
     private final String TAG = "EventQueueWriter";
     private final List<IStorage> storages;
@@ -30,7 +31,6 @@ public class EventQueueWriter implements Runnable {
     private EventCompressor compressor;
     private EventHandler handler;
     private URL endpoint;
-    private int power;
 
     /**
      * Constructor for a queue of events
@@ -47,7 +47,6 @@ public class EventQueueWriter implements Runnable {
         this.clientTelemetry= clientTelemetry;
         this.endpoint       = endpoint;
         this.removedStorages= new ArrayList<IStorage>();
-        this.power          = 1;
     }
 
     /**
@@ -64,7 +63,6 @@ public class EventQueueWriter implements Runnable {
         this.clientTelemetry= clientTelemetry;
         this.handler        = handler;
         this.endpoint       = endpoint;
-        this.power          = 1;
 
         clientTelemetry.IncrementEventsQueuedForUpload();
     }
@@ -200,7 +198,7 @@ public class EventQueueWriter implements Runnable {
     }
 
     private boolean sendBatch(String batchedEvents, IStorage storage) {
-        // This is "" if we upload an empty file which we should just skip
+        // This is "" if we upload an empty file which we should jus t skip
         if(batchedEvents.equals("")) {
             removedStorages.add(storage);
             return true;
