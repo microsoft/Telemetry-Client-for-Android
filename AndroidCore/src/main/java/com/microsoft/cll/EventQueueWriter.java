@@ -198,7 +198,7 @@ public class EventQueueWriter implements Runnable {
     }
 
     private boolean sendBatch(String batchedEvents, IStorage storage) {
-        // This is "" if we upload an empty file which we should jus t skip
+        // This is "" if we upload an empty file which we should just skip
         if(batchedEvents.equals("")) {
             removedStorages.add(storage);
             return true;
