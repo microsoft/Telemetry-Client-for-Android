@@ -66,7 +66,7 @@ public class SingletonCll implements ICll, IChannel {
         this.settingsSync        = new SettingsSync(clientTelemetry, logger, iKey);
         this.snapshotScheduler   = new SnapshotScheduler(clientTelemetry, logger, this);
 
-        this.logger.setVerbosity(ILogger.Verbosity.INFO);
+        this.logger.setVerbosity(Verbosity.INFO);
     }
 
     /**
@@ -166,7 +166,7 @@ public class SingletonCll implements ICll, IChannel {
      * Allow the host application to set the verbosity to help with debugging during runtime
      * @param verbosity - The verbosity to use
      */
-    public void setDebugVerbosity(ILogger.Verbosity verbosity)
+    public void setDebugVerbosity(Verbosity verbosity)
     {
         logger.setVerbosity(verbosity);
     }

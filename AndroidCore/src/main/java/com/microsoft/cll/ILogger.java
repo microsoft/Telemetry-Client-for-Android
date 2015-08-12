@@ -12,11 +12,4 @@ public interface ILogger {
     public void warn(String TAG, String message);
 
     public void error(String TAG, String message);
-
-    public enum Verbosity {
-        INFO,
-        WARN,
-        ERROR,
-        NONE
-    }
 }

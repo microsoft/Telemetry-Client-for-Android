@@ -17,13 +17,11 @@ android {
         versionCode 1
         versionName projectVersion
     }
-}
 
-android {
     sourceSets {
         main {
             java {
-                srcDir 'src/main/java'                                        
+                srcDir 'src/main/java'
             }
             res {
                 srcDir 'src/main/res'
@@ -38,14 +36,14 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }
 
 task generateJar(type: Copy) {
-    group 'Build'    
+    group 'Build'
     dependsOn assemble
     from 'build/intermediates/bundles/release/classes.jar'
     into 'build/libs'
@@ -81,9 +79,10 @@ artifacts {
     archives sourcesJar
 }
 
-status='Release'
-version=projectVersion
-group=projectGroup
+status = 'Release'
+group = projectGroup
+version = projectVersion
+
 
 install {
     repositories.mavenInstaller {

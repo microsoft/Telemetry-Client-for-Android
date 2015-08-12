@@ -1,7 +1,6 @@
-package com.microsoft.cll.Android;
+package com.microsoft.cll.android;
 
 import android.test.AndroidTestCase;
-import com.microsoft.cll.AndroidLogger;
 
 public class AndroidPartATests extends AndroidTestCase {
 

@@ -49,7 +49,7 @@ public class Cll implements IChannel, ICll
     }
 
     @Override
-    public void setDebugVerbosity(ILogger.Verbosity verbosity) {
+    public void setDebugVerbosity(Verbosity verbosity) {
         cll.setDebugVerbosity(verbosity);
     }
 

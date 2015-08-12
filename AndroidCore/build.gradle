@@ -1,35 +1,67 @@
-apply plugin: 'java'
+apply plugin: 'com.android.library'
 apply plugin: "com.jfrog.bintray"
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'maven-publish'
 
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
-
-sourceSets {
-    main {
-        java {
-            srcDir 'src/main/java'
-            srcDir 'src/generated/java'
-        }            
+android {
+    compileSdkVersion 22
+    buildToolsVersion '21.1.2'
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_6
+        targetCompatibility JavaVersion.VERSION_1_6
     }
-    test {
-        java {
-            srcDir 'src/test/java'
-            srcDir 'src/test/generated/java'
+
+    defaultConfig {
+        minSdkVersion 9
+        targetSdkVersion 22
+        versionCode 1
+        versionName projectVersion
+    }
+
+    sourceSets {
+        main {
+            java {
+                srcDir 'src/main/java'
+                srcDir 'src/generated/java'
+            }
+            res {
+                srcDir 'src/main/res'
+            }
+        }
+
+        test {
+            java {
+                srcDir 'src/test/java'
+                srcDir 'src/test/generated/java'
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }
 
-dependencies {
-    compile 'org.json:json:20140107'
-    compile project(':SharedTelemetryContracts')
+task generateJar(type: Copy) {
+    group 'Build'
+    dependsOn assemble
+    from 'build/intermediates/bundles/release/classes.jar'
+    into 'build/libs'
+    rename('classes.jar', 'AndroidCore.jar')
+}
 
-    testCompile('junit:junit:4.12')
-    testCompile('org.powermock:powermock-module-junit4:1.6.1')
-    testCompile('org.powermock:powermock-api-easymock:1.6.1')
+build.finalizedBy generateJar
+
+dependencies {
+    compile project(':SharedTelemetryContracts')
+    testCompile 'junit:junit:4.12'
 }
 
 task docs(type: Javadoc) {
-    source =sourceSets.main.java.srcDirs
+    source = android.sourceSets.main.java.srcDirs
     options.links("http://d.android.com/reference/")
 }
 
@@ -42,7 +74,7 @@ task docsJar(type: Jar) {
 task sourcesJar(type: Jar) {
     classifier = 'sources'
     baseName = project.name
-    from sourceSets.main.java.srcDirs
+    from android.sourceSets.main.java.srcDirs
 }
 
 artifacts {
@@ -52,13 +84,13 @@ artifacts {
 
 status = 'Release'
 group = projectGroup
-version=projectVersion
+version = projectVersion
 
 install {
     repositories.mavenInstaller {
         pom {
             project {
-                packaging 'jar'
+                packaging 'aar'
                 name projectName
                 description projectDesc
                 url gitUrl

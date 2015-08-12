@@ -1,10 +1,14 @@
-package com.microsoft.cll;
+package com.microsoft.cll.android;
 
 import android.util.Log;
+
+import com.microsoft.cll.ILogger;
+import com.microsoft.cll.Verbosity;
 
 /**
  * Handles android logging using logcat
  */
+
 public class AndroidLogger implements ILogger {
     private Verbosity verbosity;
 

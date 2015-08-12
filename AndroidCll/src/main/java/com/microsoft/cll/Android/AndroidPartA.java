@@ -1,4 +1,4 @@
-package com.microsoft.cll.Android;
+package com.microsoft.cll.android;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;

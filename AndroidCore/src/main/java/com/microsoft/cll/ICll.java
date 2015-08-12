@@ -40,7 +40,7 @@ public interface ICll {
      * Allow the host application to set the verbosity to help with debugging during runtime
      * @param verbosity - The verbosity to use
      */
-    void setDebugVerbosity(ILogger.Verbosity verbosity);
+    void setDebugVerbosity(Verbosity verbosity);
 
     /**
      * Log a bond event

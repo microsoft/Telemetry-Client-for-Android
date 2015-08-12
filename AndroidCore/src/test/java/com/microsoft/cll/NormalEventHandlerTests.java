@@ -4,7 +4,9 @@ import com.microsoft.cll.Helpers.EventHelper;
 import com.microsoft.cll.Helpers.FileHelper;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 
 import java.io.File;
 import java.util.List;
@@ -16,11 +18,13 @@ public class NormalEventHandlerTests {
     private String filePath;
     private final String newLine = "\r\n";
 
+    @Rule
+    public TestName name = new TestName();
+
     @Before
     public void setup() {
-
         try {
-            filePath = new File(".").getCanonicalPath() + File.separator + "cllEvents";
+            filePath = new File(".").getCanonicalPath() + File.separator + "cllEvents" + File.separator + name.getMethodName();
 
             cleanFiles();
 

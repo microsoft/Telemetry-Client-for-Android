@@ -1,9 +1,8 @@
-package com.microsoft.cll.Android;
+package com.microsoft.cll.android;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.microsoft.cll.AndroidLogger;
 import com.microsoft.cll.Cll;
 import com.microsoft.cll.PartA;
 import com.microsoft.cll.SettingsStore;
@@ -20,6 +19,7 @@ public class AndroidCll extends Cll implements SettingsStore.UpdateListener {
     private final String sharedHostPreferencesName = "AndroidHostSettingsSharedPreferences";
     private final SharedPreferences cllPreferences;
     private final SharedPreferences hostPreferences;
+
     /**
      * Create a Cll for Android
      * @param iKey Your iKey

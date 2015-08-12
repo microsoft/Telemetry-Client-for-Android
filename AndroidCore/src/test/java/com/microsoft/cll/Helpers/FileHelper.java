@@ -55,7 +55,12 @@ public class FileHelper {
             }
         };
 
-        return new File(filePath).listFiles(filter);
+        File[] files = new File(filePath).listFiles(filter);
+        if(files == null) {
+            files = new File[] {};
+        }
+
+        return files;
     }
 
     private static List<String> readEventsFromFile(File file) {
