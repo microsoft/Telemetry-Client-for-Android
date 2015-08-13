@@ -22,6 +22,7 @@ android {
         main {
             java {
                 srcDir 'src/main/java'
+                srcDir 'src/generated/java'
             }
             res {
                 srcDir 'src/main/res'
@@ -31,7 +32,14 @@ android {
             java {
                 srcDir 'src/androidTest/java'
             }
-        }    
+        }
+
+        test {
+            java {
+                srcDir 'src/test/java'
+                srcDir 'src/test/generated/java'
+            }
+        }
     }
 
     buildTypes {
@@ -53,7 +61,7 @@ task generateJar(type: Copy) {
 build.finalizedBy generateJar
 
 dependencies {
-    compile project(':AndroidCore')
+    compile project(':SharedTelemetryContracts')
     testCompile('junit:junit:4.12')
 }
 
