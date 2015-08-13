@@ -29,7 +29,7 @@ public class CriticalEventHandlerTests {
             filePath = new File(".").getCanonicalPath() + File.separator + "cllEvents" + File.separator + name.getMethodName();
             File dir = new File(filePath);
             if(!dir.exists()) {
-                dir.mkdir();
+                dir.mkdirs();
             }
 
             criticalEventHandler = new CriticalEventHandler(new CustomLogger(), filePath);
