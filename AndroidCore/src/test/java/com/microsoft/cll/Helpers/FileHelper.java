@@ -83,4 +83,22 @@ public class FileHelper {
 
         return  list;
     }
+
+    public static void cleanupFiles(String filePath) {
+        File[] files = FileHelper.findFiles(FileHelper.normalEventFileExtension, filePath);
+        for(File file : files) {
+            file.delete();
+        }
+
+        files = FileHelper.findFiles(FileHelper.criticalEventFileExtension, filePath);
+        for(File file : files) {
+            file.delete();
+        }
+
+        // Delete all files on disk here
+        File dir = new File(filePath);
+        if(dir.exists()) {
+            dir.delete();
+        }
+    }
 }

@@ -26,7 +26,7 @@ public class NormalEventHandlerTests {
         try {
             filePath = new File(".").getCanonicalPath() + File.separator + "cllEvents" + File.separator + name.getMethodName();
 
-            cleanFiles();
+            FileHelper.cleanupFiles(filePath);
 
             File dir = new File(filePath);
             if(!dir.exists()) {
@@ -45,29 +45,7 @@ public class NormalEventHandlerTests {
             normalEventHandler.close();
         }
 
-        cleanFiles();
-    }
-
-    private void cleanFiles() {
-        File[] files = FileHelper.findFiles(FileHelper.normalEventFileExtension, filePath);
-        if (files != null) {
-            for (File file : files) {
-                file.delete();
-            }
-        }
-
-        files = FileHelper.findFiles(FileHelper.criticalEventFileExtension, filePath);
-        if (files != null) {
-            for (File file : files) {
-                file.delete();
-            }
-        }
-
-        // Delete all files on disk here
-        File dir = new File(filePath);
-        if (dir.exists()) {
-            dir.delete();
-        }
+        FileHelper.cleanupFiles(filePath);
     }
 
     /**
