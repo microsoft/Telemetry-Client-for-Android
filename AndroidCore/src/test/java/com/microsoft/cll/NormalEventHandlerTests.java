@@ -30,7 +30,7 @@ public class NormalEventHandlerTests {
 
             File dir = new File(filePath);
             if(!dir.exists()) {
-                dir.mkdir();
+                dir.mkdirs();
             }
 
             normalEventHandler = new NormalEventHandler(new CustomLogger(), filePath);
