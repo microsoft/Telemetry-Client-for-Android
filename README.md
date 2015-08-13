@@ -1,1 +1,1 @@
-# Telemetry-Client-for-Android 1.0
+# Telemetry-Client-for-Android 2.0
