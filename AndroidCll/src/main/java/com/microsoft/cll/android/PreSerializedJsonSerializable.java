@@ -1,4 +1,4 @@
-package com.microsoft.cll;
+package com.microsoft.cll.android;
 
 import com.microsoft.telemetry.Base;
 import com.microsoft.telemetry.Data;
