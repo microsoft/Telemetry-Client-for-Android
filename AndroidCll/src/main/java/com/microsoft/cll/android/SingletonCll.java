@@ -1,6 +1,5 @@
 package com.microsoft.cll.android;
 
-import com.microsoft.cll.PreSerializedJsonSerializable;
 import com.microsoft.telemetry.Base;
 import com.microsoft.telemetry.IChannel;
 

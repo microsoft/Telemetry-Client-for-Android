@@ -8,7 +8,7 @@ import java.util.Iterator;
  * These settings are specific to the host application. They include information such as Sample Rate, Persistence, and Latency for their events
  */
 public class HostSettings extends AbstractSettings {
-    private final String baseUrl = "https://settings.data.microsoft.com/settings/v2.0/telemetry/";
+    private final String baseUrl = "https://settings.data.microsoft.com/settings/v2.0/clltelemetry/";
 
     public HostSettings(ClientTelemetry clientTelemetry, ILogger logger, String iKey) {
         super(clientTelemetry, logger);
