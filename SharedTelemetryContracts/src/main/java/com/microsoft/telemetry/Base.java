@@ -31,7 +31,7 @@ public class Base implements
     public LinkedHashMap<String, String> Attributes = new LinkedHashMap<String, String>();
     
     /**
-     * The name for thie type
+     * The name for this type
      */
     public String QualifiedName;
     

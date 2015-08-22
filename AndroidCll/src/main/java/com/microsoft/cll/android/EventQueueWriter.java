@@ -234,7 +234,7 @@ public class EventQueueWriter implements Runnable {
      * Generates a random backoff interval using k*b^p.
      * k is a constant we multiply by
      * b is the base which we raise to a power
-     * p is the power we raise to. where p is between 0..n where n increases everytime we fail unless increaseing it would put us over the maxretryperiod.
+     * p is the power we raise to. where p is between 0..n where n increases every time we fail unless increasing it would put us over the maxretryperiod.
      * @return A retry interval
      */
     int generateBackoffInterval() {

@@ -4,9 +4,6 @@ import com.microsoft.telemetry.Base;
 
 import java.util.Map;
 
-/**
- * Created by jmorman on 7/14/2015.
- */
 public interface ICll {
     /**
      * Starts the queue-draining background thread and uploader. Start must be called prior

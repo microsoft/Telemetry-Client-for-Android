@@ -31,7 +31,7 @@ public class FileStorage implements IStorage {
     private AbstractHandler parent;
 
     /**
-    This constructor is for opening a new file.
+     * This constructor is for opening a new file.
      */
     public FileStorage(String fileExtension, ILogger logger, String filePath, AbstractHandler parent) {
         this.eventsWritten      = 0;
