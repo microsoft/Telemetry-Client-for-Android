@@ -52,7 +52,7 @@ public abstract class PartA {
     private long epoch;
     private long flags;
     private String iKey;
-    private boolean useLagacyCS = false;
+    private boolean useLegacyCS = false;
 
     /**
      * Set variables that will be used across all Part A's and constant
@@ -85,7 +85,7 @@ public abstract class PartA {
         Cll.EventPersistence persistence = Cll.EventPersistence.valueOf(SettingsStore.getSetting(base, SettingsStore.Settings.PERSISTENCE).toString().toUpperCase());
         Cll.EventLatency latency = Cll.EventLatency.valueOf(SettingsStore.getSetting(base, SettingsStore.Settings.LATENCY).toString().toUpperCase());
 
-        if(useLagacyCS) {
+        if(useLegacyCS) {
             com.microsoft.telemetry.cs2.Envelope envelope = populateLegacyEnvelope(base, cV, sampleRate, persistence, latency, tags);
             return populateSerializedEvent(serializer.serialize(envelope), persistence, latency, envelope.getSampleRate(), envelope.getDeviceId());
         } else {
@@ -140,11 +140,11 @@ public abstract class PartA {
     }
 
     /**
-     * Set's whether we should use the legacy part A fields or not.
+     * Sets whether we should use the legacy part A fields or not.
      * @param value True if we should, false if we should not
      */
-    void useLagacyCS(boolean value) {
-        this.useLagacyCS = value;
+    void useLegacyCS(boolean value) {
+        this.useLegacyCS = value;
     }
 
     protected abstract void setDeviceInfo();
