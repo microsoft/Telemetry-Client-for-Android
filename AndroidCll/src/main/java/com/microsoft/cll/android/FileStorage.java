@@ -15,7 +15,7 @@ import java.util.UUID;
  * Storage for events on disk
  */
 public class FileStorage implements IStorage {
-    protected static final SyncronizedArrayList<String> fileLockList = new SyncronizedArrayList<String>();
+    protected static final SynchronizedArrayList<String> fileLockList = new SynchronizedArrayList<String>();
     private final String TAG = "FileStorage";
     private final ILogger logger;
     private final EventSerializer serializer;
