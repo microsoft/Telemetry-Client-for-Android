@@ -18,7 +18,7 @@ public class HostSettings extends AbstractSettings {
     }
 
     /*
-    Parses the settings returned by OneSettings
+     * Parses the settings returned by OneSettings
      */
     @Override
     public void ParseSettings(JSONObject resultJson) {
@@ -52,7 +52,7 @@ public class HostSettings extends AbstractSettings {
     }
 
     /*
-    Sets the endpoint for where to look for this apps settings.
+     * Sets the endpoint for where to look for this app's settings.
      */
     @Override
     public void setSettingsEndpoint(String iKey) {

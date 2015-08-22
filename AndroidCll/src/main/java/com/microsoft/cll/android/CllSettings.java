@@ -23,7 +23,7 @@ public class CllSettings extends AbstractSettings
     }
 
     /**
-     *Parses the settings returned from OneSettings
+     * Parses the settings returned from OneSettings
      */
     @Override
     public void ParseSettings(JSONObject resultJson)

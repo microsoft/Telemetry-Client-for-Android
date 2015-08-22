@@ -15,7 +15,7 @@ import java.util.UUID;
  * Storage for events on disk
  */
 public class FileStorage implements IStorage {
-    protected static final SyncronizedArrayList<String> fileLockList = new SyncronizedArrayList<String>();
+    protected static final SynchronizedArrayList<String> fileLockList = new SynchronizedArrayList<String>();
     private final String TAG = "FileStorage";
     private final ILogger logger;
     private final EventSerializer serializer;
@@ -31,7 +31,7 @@ public class FileStorage implements IStorage {
     private AbstractHandler parent;
 
     /**
-    This constructor is for opening a new file.
+     * This constructor is for opening a new file.
      */
     public FileStorage(String fileExtension, ILogger logger, String filePath, AbstractHandler parent) {
         this.eventsWritten      = 0;
