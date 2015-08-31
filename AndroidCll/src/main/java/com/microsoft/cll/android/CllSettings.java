@@ -20,6 +20,7 @@ public class CllSettings extends AbstractSettings
         this.endpoint = SettingsStore.getCllSettingsAsString(SettingsStore.Settings.CLLSETTINGSURL);
         this.settingsSync = settingsSync;
         this.TAG = "CllSettings";
+        this.ETagSettingName = SettingsStore.Settings.CLLSETTINGSETAG;
     }
 
     /**

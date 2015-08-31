@@ -15,6 +15,7 @@ public class HostSettings extends AbstractSettings {
 
         this.setSettingsEndpoint(iKey);
         this.TAG ="HostSettings";
+        this.ETagSettingName = SettingsStore.Settings.HOSTSETTINGSETAG;
     }
 
     /*

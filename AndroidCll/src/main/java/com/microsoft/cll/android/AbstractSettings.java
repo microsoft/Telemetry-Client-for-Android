@@ -24,6 +24,7 @@ public abstract class AbstractSettings {
     protected final ClientTelemetry clientTelemetry;
     protected final ILogger logger;
     protected String TAG = "AbstractSettings";
+    protected SettingsStore.Settings ETagSettingName;
 
     protected AbstractSettings(ClientTelemetry clientTelemetry, ILogger logger) {
         this.clientTelemetry = clientTelemetry;
@@ -55,6 +56,8 @@ public abstract class AbstractSettings {
                 httpConnection.setConnectTimeout(SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.HTTPTIMEOUTINTERVAL));
                 httpConnection.setRequestMethod("GET");
                 httpConnection.setRequestProperty("Accept", "application/json");
+                httpConnection.setRequestProperty("If-None-Match", SettingsStore.getCllSettingsAsString(ETagSettingName));
+
 
                 long start = Calendar.getInstance(TimeZone.getTimeZone("UTC"), Locale.US).getTimeInMillis();
                 httpConnection.connect();
@@ -63,11 +66,26 @@ public abstract class AbstractSettings {
                 clientTelemetry.SetAvgSettingsResponseLatencyMs((int) diff);
                 clientTelemetry.SetMaxSettingsResponseLatencyMs((int) diff);
 
-                if (httpConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+
+                // Check for failure (Anything that isn't a 200 or 304 we are considering a failure)
+                if (httpConnection.getResponseCode() != HttpURLConnection.HTTP_OK && httpConnection.getResponseCode() != HttpURLConnection.HTTP_NOT_MODIFIED) {
                     clientTelemetry.IncrementSettingsHttpFailures();
+                }
+
+                // Close the connection if this was not a success or there are no new settings
+                if(httpConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    httpConnection.disconnect();
+                    httpConnection = null;
+                    // set connection to null so we don't try/catch every time we
+                    // make a valid connection
+                    connection = null;
                     return null;
                 }
 
+                String ETag = httpConnection.getHeaderField("ETAG");
+                if(ETag != null && !ETag.isEmpty()) {
+                    SettingsStore.updateCllSetting(ETagSettingName, ETag);
+                }
 
                 BufferedReader input = new BufferedReader(
                         new InputStreamReader(httpConnection.getInputStream()));

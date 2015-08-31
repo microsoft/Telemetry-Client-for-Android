@@ -30,7 +30,9 @@ public class SettingsStore {
         BASERETRYPERIOD,
         CONSTANTFORRETRYPERIOD,
         NORMALEVENTMEMORYQUEUESIZE,
-        CLLSETTINGSURL
+        CLLSETTINGSURL,
+        HOSTSETTINGSETAG,
+        CLLSETTINGSETAG
     }
 
     static {
@@ -53,6 +55,8 @@ public class SettingsStore {
         cllSettings.put(Settings.CONSTANTFORRETRYPERIOD, 3);
         cllSettings.put(Settings.NORMALEVENTMEMORYQUEUESIZE, 10);
         cllSettings.put(Settings.CLLSETTINGSURL, "https://settings.data.microsoft.com/settings/v2.0/androidLL/app");
+        cllSettings.put(Settings.HOSTSETTINGSETAG, "");
+        cllSettings.put(Settings.CLLSETTINGSETAG, "");
     }
 
     protected static int getCllSettingsAsInt(Settings setting) {
