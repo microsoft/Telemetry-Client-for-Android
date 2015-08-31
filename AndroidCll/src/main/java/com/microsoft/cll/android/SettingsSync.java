@@ -22,18 +22,18 @@ public class SettingsSync extends ScheduledWorker
     private final String TAG = "SettingsSync";
     private final List<AbstractSettings> settingsList;
 
-    public SettingsSync(ClientTelemetry clientTelemetry, ILogger logger, String iKey)
+    public SettingsSync(ClientTelemetry clientTelemetry, ILogger logger, String iKey, PartA partA)
     {
         super(SettingsStore.getCllSettingsAsLong(SettingsStore.Settings.SYNCREFRESHINTERVAL));
 
         this.clientTelemetry = clientTelemetry;
         this.logger = logger;
         this.settingsList = new ArrayList<AbstractSettings>();
-        this.settingsList.add(new CllSettings(clientTelemetry, logger, this));
+        this.settingsList.add(new CllSettings(clientTelemetry, logger, this, partA));
 
         // Only add host settings sync if we have an ikey to use to look up host settings
         if(!iKey.equals("")) {
-            this.settingsList.add(new HostSettings(clientTelemetry, logger, iKey));
+            this.settingsList.add(new HostSettings(clientTelemetry, logger, iKey, partA));
         }
     }
 

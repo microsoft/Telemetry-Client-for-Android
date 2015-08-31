@@ -13,9 +13,9 @@ public class CllSettings extends AbstractSettings
 
     private final SettingsSync settingsSync;
 
-    public CllSettings(ClientTelemetry clientTelemetry, ILogger logger, SettingsSync settingsSync)
+    public CllSettings(ClientTelemetry clientTelemetry, ILogger logger, SettingsSync settingsSync, PartA partA)
     {
-        super(clientTelemetry, logger);
+        super(clientTelemetry, logger, partA);
 
         this.endpoint = SettingsStore.getCllSettingsAsString(SettingsStore.Settings.CLLSETTINGSURL);
         this.settingsSync = settingsSync;

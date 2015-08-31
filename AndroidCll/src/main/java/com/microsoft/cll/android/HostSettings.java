@@ -10,8 +10,8 @@ import java.util.Iterator;
 public class HostSettings extends AbstractSettings {
     private final String baseUrl = "https://settings.data.microsoft.com/settings/v2.0/telemetry/";
 
-    public HostSettings(ClientTelemetry clientTelemetry, ILogger logger, String iKey) {
-        super(clientTelemetry, logger);
+    public HostSettings(ClientTelemetry clientTelemetry, ILogger logger, String iKey, PartA partA) {
+        super(clientTelemetry, logger, partA);
 
         this.setSettingsEndpoint(iKey);
         this.TAG ="HostSettings";

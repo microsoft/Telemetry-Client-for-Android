@@ -25,10 +25,12 @@ public abstract class AbstractSettings {
     protected final ILogger logger;
     protected String TAG = "AbstractSettings";
     protected SettingsStore.Settings ETagSettingName;
+    private final PartA partA;
 
-    protected AbstractSettings(ClientTelemetry clientTelemetry, ILogger logger) {
+    protected AbstractSettings(ClientTelemetry clientTelemetry, ILogger logger, PartA partA) {
         this.clientTelemetry = clientTelemetry;
         this.logger = logger;
+        this.partA = partA;
     }
 
     /**
@@ -39,7 +41,7 @@ public abstract class AbstractSettings {
         URL url;
 
         try {
-            url = new URL(endpoint);
+            url = new URL(endpoint + getQueryParameters());
         } catch (MalformedURLException e) {
             logger.error(TAG, "Settings URL is invalid");
             clientTelemetry.IncrementSettingsHttpFailures();
@@ -127,6 +129,24 @@ public abstract class AbstractSettings {
         }
 
         return null;
+    }
+
+    /**
+     * Set the query parameters for the settings request
+     * @return
+     */
+    protected String getQueryParameters() {
+        StringBuilder builder = new StringBuilder();
+        builder.append('?');
+        builder.append("os=");
+        builder.append(partA.osName);
+        builder.append("&osVer=");
+        builder.append(partA.osVer);
+        builder.append("&deviceClass=");
+        builder.append(partA.deviceExt.getDeviceClass());
+        builder.append("&deviceId=");
+        builder.append(partA.deviceExt.getLocalId());
+        return builder.toString();
     }
 
     /**

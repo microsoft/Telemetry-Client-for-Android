@@ -63,7 +63,7 @@ public class SingletonCll implements ICll, IChannel {
         this.isChanging          = new AtomicBoolean(false);
         this.isStarted           = new AtomicBoolean(false);
         this.isPaused            = new AtomicBoolean(false);
-        this.settingsSync        = new SettingsSync(clientTelemetry, logger, iKey);
+        this.settingsSync        = new SettingsSync(clientTelemetry, logger, iKey, partA);
         this.snapshotScheduler   = new SnapshotScheduler(clientTelemetry, logger, this);
 
         this.logger.setVerbosity(Verbosity.INFO);
