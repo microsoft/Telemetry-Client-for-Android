@@ -321,7 +321,7 @@ public abstract class PartA {
         // Set PII that was passed in through bond file
         String userSensitivity = event.Attributes.get("Sensitivity");
         if(userSensitivity != null && String.valueOf(userSensitivity).compareToIgnoreCase("UserSensitive") == 0) {
-            flags |= EventSensitivity.Mark.getCode() << 16;
+            flags |= EventSensitivity.Mark.getCode();
         }
 
         // Set PII that was passed in by param
