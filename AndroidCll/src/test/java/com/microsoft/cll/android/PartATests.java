@@ -96,7 +96,7 @@ public class PartATests
         assert (envelope.getSampleRate() == 10);
         assert (!envelope.getSeq().isEmpty());
         assert (!envelope.getIKey().isEmpty());
-        assert (envelope.getFlags() == 257);
+        assert (envelope.getFlags() == 0x101);
         assert (envelope.getTags() != null);
         assert (envelope.getTags().get("cV").equals("cv"));
         assert (!envelope.getDeviceId().isEmpty());
@@ -118,7 +118,7 @@ public class PartATests
         assert (envelope.getPopSample() == 10);
         assert (envelope.getSeqNum() != 0);
         assert (!envelope.getIKey().isEmpty());
-        assert (envelope.getFlags() == 257);
+        assert (envelope.getFlags() == 0x101);
         assert (envelope.getCV().equals("cv"));
         assert (!envelope.getEpoch().isEmpty());
         assert (!envelope.getOs().isEmpty());
@@ -143,7 +143,7 @@ public class PartATests
         assert (envelope.getIKey().equals(envelopeUnHashed.getIKey()));
         assert (partA.HashStringSha256(envelopeUnHashed.getCV()).equals(envelope.getCV()));
         assert (partA.HashStringSha256(envelopeUnHashed.getEpoch()).equals(envelope.getEpoch()));
-        assert (envelope.getFlags() == 1048833);
+        assert (envelope.getFlags() == 0x100101);
         assert (!envelope.getOs().isEmpty());
         assert (!envelope.getOsVer().isEmpty());
         assert (!envelope.getAppId().isEmpty());
@@ -166,7 +166,7 @@ public class PartATests
         assert (envelope.getIKey().equals(envelopeUnHashed.getIKey()));
         assert (envelope.getCV().isEmpty());
         assert (envelope.getEpoch().isEmpty());
-        assert (envelope.getFlags() == 2097409);
+        assert (envelope.getFlags() == 0x200101);
         assert (!envelope.getOs().isEmpty());
         assert (!envelope.getOsVer().isEmpty());
         assert (!envelope.getAppId().isEmpty());
