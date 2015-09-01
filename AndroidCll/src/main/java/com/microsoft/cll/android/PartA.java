@@ -227,7 +227,7 @@ public abstract class PartA {
     private void scrubPII(Envelope envelope, EventSensitivity... sensitivities) {
         int level = getSensitivityLevel(sensitivities);
 
-        if(level == 0) {
+        if(level == EventSensitivity.None.getCode()) {
             return;
         }
 
@@ -250,14 +250,14 @@ public abstract class PartA {
         device2.setDeviceClass(deviceExt.getDeviceClass());
         envelope.getExt().put("device", device2);
 
-        if(level == 2) {
+        if(level == EventSensitivity.Drop.getCode()) {
             // Drop PII
             ((user)envelope.getExt().get("user")).setLocalId("");
             ((device)envelope.getExt().get("device")).setLocalId("r:" + String.valueOf(random.nextLong()));
             envelope.setCV("");
             envelope.setEpoch("");
             envelope.setSeqNum(0);
-        } else if(level == 1) {
+        } else if(level == EventSensitivity.Hash.getCode()) {
             // Hash PII
             ((user)envelope.getExt().get("user")).setLocalId(HashStringSha256(((user) envelope.getExt().get("user")).getLocalId()));
             ((device)envelope.getExt().get("device")).setLocalId(HashStringSha256(((device) envelope.getExt().get("device")).getLocalId()));
@@ -267,15 +267,15 @@ public abstract class PartA {
     }
 
     private int getSensitivityLevel(EventSensitivity... sensitivities) {
-        int level = 0;
+        int level = EventSensitivity.None.getCode();
         for(EventSensitivity sensitivity : sensitivities) {
             if(sensitivity == EventSensitivity.Drop) {
-                level = 2;
+                level = EventSensitivity.Drop.getCode();
                 break;
             }
 
             if(sensitivity == EventSensitivity.Hash) {
-                level = 1;
+                level = EventSensitivity.Hash.getCode();
                 continue;
             }
         }
@@ -328,15 +328,15 @@ public abstract class PartA {
         if(sensitivities != null) {
             for (EventSensitivity sensitivity : sensitivities) {
                 if(sensitivity == EventSensitivity.Mark) {
-                    flags |= sensitivity.getCode() << 16;
+                    flags |= sensitivity.getCode();
                 } else {
-                    flags |= sensitivity.getCode() << 20;
+                    flags |= sensitivity.getCode();
                 }
             }
         }
 
         // Set Latency
-        flags |= latency.getCode() << 8;
+        flags |= latency.getCode();
 
         // Set persistence
         flags |= persistence.getCode();

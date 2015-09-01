@@ -133,8 +133,8 @@ public class Cll implements IChannel, ICll
      */
     public enum EventLatency
     {
-        NORMAL(1),
-        REALTIME(2);
+        NORMAL(0x100),
+        REALTIME(0x200);
 
         private int value;
 
