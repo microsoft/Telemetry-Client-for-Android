@@ -16,6 +16,8 @@ public class CustomPartA extends PartA {
     protected void setAppInfo()
     {
         // TODO: Populate app info in generic java
+        appId = "appId";
+        appVer = "1.1.1.1";
     }
 
     @Override
@@ -44,6 +46,7 @@ public class CustomPartA extends PartA {
         setDeviceInfo();
         setUserId();
         setOs();
+        setAppInfo();
     }
 
     protected String getMacAddress()

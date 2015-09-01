@@ -54,13 +54,13 @@ public class Cll implements IChannel, ICll
     }
 
     @Override
-    public void log(PreSerializedEvent event) {
-        cll.log(event);
+    public void log(PreSerializedEvent event, EventSensitivity... sensitivities) {
+        cll.log(event, sensitivities);
     }
 
     @Override
-    public void log(Base event) {
-        cll.log(event);
+    public void log(Base event, EventSensitivity... sensitivities) {
+        cll.log(event, sensitivities);
     }
 
     @Override

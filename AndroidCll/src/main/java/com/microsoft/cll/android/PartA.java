@@ -53,6 +53,7 @@ public abstract class PartA {
     private long flags;
     private String iKey;
     private boolean useLagacyCS = false;
+    private Random random;
 
     /**
      * Set variables that will be used across all Part A's and constant
@@ -71,7 +72,7 @@ public abstract class PartA {
         androidExt = new android();
         androidExt.setLibVer(BuildNumber.BuildNumber);
 
-        Random random = new Random();
+        random = new Random();
         epoch = random.nextLong();
     }
 
@@ -80,21 +81,21 @@ public abstract class PartA {
      *
      * @param base The base event to package in the Envelope
      */
-    public SerializedEvent populate(final Base base, String cV, Map<String, String> tags) {
+    public SerializedEvent populate(final Base base, String cV, Map<String, String> tags, EventSensitivity... sensitivities) {
         int sampleRate = Integer.parseInt(SettingsStore.getSetting(base, SettingsStore.Settings.SAMPLERATE).toString());
         Cll.EventPersistence persistence = Cll.EventPersistence.valueOf(SettingsStore.getSetting(base, SettingsStore.Settings.PERSISTENCE).toString().toUpperCase());
         Cll.EventLatency latency = Cll.EventLatency.valueOf(SettingsStore.getSetting(base, SettingsStore.Settings.LATENCY).toString().toUpperCase());
 
         if(useLagacyCS) {
-            com.microsoft.telemetry.cs2.Envelope envelope = populateLegacyEnvelope(base, cV, sampleRate, persistence, latency, tags);
+            com.microsoft.telemetry.cs2.Envelope envelope = populateLegacyEnvelope(base, cV, sampleRate, persistence, latency, tags, sensitivities);
             return populateSerializedEvent(serializer.serialize(envelope), persistence, latency, envelope.getSampleRate(), envelope.getDeviceId());
         } else {
-            Envelope envelope = populateEnvelope(base, cV, sampleRate, persistence, latency);
+            Envelope envelope = populateEnvelope(base, cV, sampleRate, persistence, latency, sensitivities);
             return populateSerializedEvent(serializer.serialize(envelope), persistence, latency, envelope.getPopSample(), deviceExt.getLocalId());
         }
     }
 
-    public Envelope populateEnvelope(final Base base, String cV, int sampleRate, Cll.EventPersistence persistence, Cll.EventLatency latency) {
+    public Envelope populateEnvelope(final Base base, String cV, int sampleRate, Cll.EventPersistence persistence, Cll.EventLatency latency, EventSensitivity... sensitivities) {
         final Envelope envelope = new Envelope();
         setBaseType(base);
         envelope.setVer(csVer);
@@ -109,13 +110,15 @@ public abstract class PartA {
         envelope.setAppId(appId);
         envelope.setAppVer(appVer);
         envelope.setCV(cV);
-        envelope.setFlags(setFlags(persistence, latency));
+        envelope.setFlags(setFlags(persistence, latency, base, sensitivities));
         envelope.setIKey(iKey);
         envelope.setExt(createExtensions());
+
+        scrubPII(envelope, sensitivities);
         return envelope;
     }
 
-    public com.microsoft.telemetry.cs2.Envelope populateLegacyEnvelope(final Base base, String cV, int sampleRate, Cll.EventPersistence persistence, Cll.EventLatency latency, Map<String, String> tags) {
+    public com.microsoft.telemetry.cs2.Envelope populateLegacyEnvelope(final Base base, String cV, int sampleRate, Cll.EventPersistence persistence, Cll.EventLatency latency, Map<String, String> tags, EventSensitivity... sensitivities) {
         if(tags == null) {
             tags = new HashMap<String, String>();
         }
@@ -134,8 +137,11 @@ public abstract class PartA {
         envelope.setAppId(appId);
         envelope.setAppVer(appVer);
         envelope.setTags(tags);
-        envelope.setFlags(setFlags(persistence, latency));
+        envelope.setFlags(setFlags(persistence, latency, base, sensitivities));
         envelope.setIKey(iKey);
+        envelope.setUserId(userExt.getLocalId());
+        envelope.setDeviceId(deviceExt.getLocalId());
+
         return envelope;
     }
 
@@ -158,6 +164,10 @@ public abstract class PartA {
     protected abstract void PopulateConstantValues();
 
     protected String HashStringSha256(String str) {
+        if(str == null) {
+            return "";
+        }
+
         try {
             // Get a Sha256 digest
             MessageDigest hash = MessageDigest.getInstance("SHA-256");
@@ -214,6 +224,65 @@ public abstract class PartA {
         return extensions;
     }
 
+    private void scrubPII(Envelope envelope, EventSensitivity... sensitivities) {
+        int level = getSensitivityLevel(sensitivities);
+
+        if(level == 0) {
+            return;
+        }
+
+        // We have to copy these objects so the values we change won't be permanently set.
+        user userExt = (user)envelope.getExt().get("user");
+        user user2 = new user();
+        user2.setLocalId(userExt.getLocalId());
+        user2.setAuthId(userExt.getAuthId());
+        user2.setId(userExt.getId());
+        user2.setVer(userExt.getVer());
+        envelope.getExt().put("user", user2);
+
+        device deviceExt = (device)envelope.getExt().get("device");
+        device device2 = new device();
+        device2.setLocalId(deviceExt.getLocalId());
+        device2.setVer(deviceExt.getVer());
+        device2.setId(deviceExt.getId());
+        device2.setAuthId(deviceExt.getAuthId());
+        device2.setAuthSecId(deviceExt.getAuthSecId());
+        device2.setDeviceClass(deviceExt.getDeviceClass());
+        envelope.getExt().put("device", device2);
+
+        if(level == 2) {
+            // Drop PII
+            ((user)envelope.getExt().get("user")).setLocalId("");
+            ((device)envelope.getExt().get("device")).setLocalId("r:" + String.valueOf(random.nextLong()));
+            envelope.setCV("");
+            envelope.setEpoch("");
+            envelope.setSeqNum(0);
+        } else if(level == 1) {
+            // Hash PII
+            ((user)envelope.getExt().get("user")).setLocalId(HashStringSha256(((user) envelope.getExt().get("user")).getLocalId()));
+            ((device)envelope.getExt().get("device")).setLocalId(HashStringSha256(((device) envelope.getExt().get("device")).getLocalId()));
+            envelope.setCV(HashStringSha256(envelope.getCV()));
+            envelope.setEpoch(HashStringSha256(envelope.getEpoch()));
+        }
+    }
+
+    private int getSensitivityLevel(EventSensitivity... sensitivities) {
+        int level = 0;
+        for(EventSensitivity sensitivity : sensitivities) {
+            if(sensitivity == EventSensitivity.Drop) {
+                level = 2;
+                break;
+            }
+
+            if(sensitivity == EventSensitivity.Hash) {
+                level = 1;
+                continue;
+            }
+        }
+
+        return level;
+    }
+
     /**
      * Gets the current date time
      *
@@ -246,10 +315,29 @@ public abstract class PartA {
      * @param persistence
      * @param latency
      */
-    private long setFlags(Cll.EventPersistence persistence, Cll.EventLatency latency) {
+    private long setFlags(Cll.EventPersistence persistence, Cll.EventLatency latency, Base event, EventSensitivity... sensitivities) {
         flags = 0;
+
+        // Set PII that was passed in through bond file
+        String userSensitivity = event.Attributes.get("Sensitivity");
+        if(userSensitivity != null && String.valueOf(userSensitivity).compareToIgnoreCase("UserSensitive") == 0) {
+            flags |= EventSensitivity.Mark.getCode() << 16;
+        }
+
+        // Set PII that was passed in by param
+        if(sensitivities != null) {
+            for (EventSensitivity sensitivity : sensitivities) {
+                if(sensitivity == EventSensitivity.Mark) {
+                    flags |= sensitivity.getCode() << 16;
+                } else {
+                    flags |= sensitivity.getCode() << 20;
+                }
+            }
+        }
+
         // Set Latency
         flags |= latency.getCode() << 8;
+
         // Set persistence
         flags |= persistence.getCode();
 

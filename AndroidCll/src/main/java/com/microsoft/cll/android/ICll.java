@@ -48,7 +48,7 @@ public interface ICll {
      * @param event
      *            The serializable event to log
      */
-    void log(final PreSerializedEvent event);
+    void log(final PreSerializedEvent event, EventSensitivity... sensitivities);
 
     /**
      * Log a bond event
@@ -56,7 +56,7 @@ public interface ICll {
      * @param event
      *            The serializable event to log
      */
-    void log(final Base event);
+    void log(final Base event, EventSensitivity... sensitivities);
 
     void log(final Base event, Map<String, String> tags);
 
