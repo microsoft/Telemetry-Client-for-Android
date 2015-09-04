@@ -44,7 +44,6 @@ public abstract class AbstractSettings {
             url = new URL(endpoint + getQueryParameters());
         } catch (MalformedURLException e) {
             logger.error(TAG, "Settings URL is invalid");
-            clientTelemetry.IncrementSettingsHttpFailures();
             return null;
         }
 
@@ -69,8 +68,13 @@ public abstract class AbstractSettings {
                 clientTelemetry.SetMaxSettingsResponseLatencyMs((int) diff);
 
 
-                // Check for failure (Anything that isn't a 200 or 304 we are considering a failure)
-                if (httpConnection.getResponseCode() != HttpURLConnection.HTTP_OK && httpConnection.getResponseCode() != HttpURLConnection.HTTP_NOT_MODIFIED) {
+                // Check for success (Only 200 and 304 are considered successful)
+                if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK || httpConnection.getResponseCode() == HttpURLConnection.HTTP_NOT_MODIFIED) {
+                    String ETag = httpConnection.getHeaderField("ETAG");
+                    if(ETag != null && !ETag.isEmpty()) {
+                        SettingsStore.updateCllSetting(ETagSettingName, ETag);
+                    }
+                } else {
                     clientTelemetry.IncrementSettingsHttpFailures();
                 }
 
@@ -82,11 +86,6 @@ public abstract class AbstractSettings {
                     // make a valid connection
                     connection = null;
                     return null;
-                }
-
-                String ETag = httpConnection.getHeaderField("ETAG");
-                if(ETag != null && !ETag.isEmpty()) {
-                    SettingsStore.updateCllSetting(ETagSettingName, ETag);
                 }
 
                 BufferedReader input = new BufferedReader(
@@ -109,8 +108,6 @@ public abstract class AbstractSettings {
             logger.error(TAG, e.getMessage());
             clientTelemetry.IncrementSettingsHttpFailures();
         } catch (JSONException e) {
-            logger.error(TAG, e.getMessage());
-        }catch (Exception e) {
             logger.error(TAG, e.getMessage());
         } finally {
             // close connection if it's still open
