@@ -327,11 +327,7 @@ public abstract class PartA {
         // Set PII that was passed in by param
         if(sensitivities != null) {
             for (EventSensitivity sensitivity : sensitivities) {
-                if(sensitivity == EventSensitivity.Mark) {
-                    flags |= sensitivity.getCode();
-                } else {
-                    flags |= sensitivity.getCode();
-                }
+                flags |= sensitivity.getCode();
             }
         }
 
