@@ -27,7 +27,7 @@ public abstract class ScheduledWorker implements Runnable{
     }
 
     protected void stop() {
-        // Cancels the current even if in progress.
+        // Cancels the current sync even if in progress.
         nextExecution.cancel(true);
     }
 

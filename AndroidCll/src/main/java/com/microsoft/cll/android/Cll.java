@@ -74,8 +74,8 @@ public class Cll implements IChannel, ICll
     }
 
     @Override
-    public void useLagacyCS(boolean value) {
-        cll.useLagacyCS(value);
+    public void useLegacyCS(boolean value) {
+        cll.useLegacyCS(value);
     }
 
     @Override

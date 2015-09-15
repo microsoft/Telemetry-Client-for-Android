@@ -4,9 +4,6 @@ import com.microsoft.telemetry.Base;
 
 import java.util.Map;
 
-/**
- * Created by jmorman on 7/14/2015.
- */
 public interface ICll {
     /**
      * Starts the queue-draining background thread and uploader. Start must be called prior
@@ -75,10 +72,10 @@ public interface ICll {
     void setEndpointUrl(final String url);
 
     /**
-     * Set's whether we should use the legacy part A fields or not.
+     * Sets whether we should use the legacy part A fields or not.
      * @param value True if we should, false if we should not
      */
-    void useLagacyCS(boolean value);
+    void useLegacyCS(boolean value);
 
     /**
      * Sets the experiment id

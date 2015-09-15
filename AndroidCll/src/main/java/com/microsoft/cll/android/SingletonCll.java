@@ -234,11 +234,11 @@ public class SingletonCll implements ICll, IChannel {
     }
 
     /**
-     * Set's whether we should use the legacy part A fields or not.
+     * Sets whether we should use the legacy part A fields or not.
      * @param value True if we should, false if we should not
      */
-    public void useLagacyCS(boolean value) {
-        partA.useLagacyCS(value);
+    public void useLegacyCS(boolean value) {
+        partA.useLegacyCS(value);
     }
 
     /**
