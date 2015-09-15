@@ -1,8 +1,3 @@
-/**
- * Copyright Microsoft Corporation 2014
- * All Rights Reserved
- */
-
 package com.microsoft.cll.android;
 
 import com.microsoft.telemetry.Base;
