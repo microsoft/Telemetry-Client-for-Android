@@ -63,7 +63,7 @@ public class SingletonCll implements ICll, IChannel {
         this.isChanging          = new AtomicBoolean(false);
         this.isStarted           = new AtomicBoolean(false);
         this.isPaused            = new AtomicBoolean(false);
-        this.settingsSync        = new SettingsSync(clientTelemetry, logger, iKey);
+        this.settingsSync        = new SettingsSync(clientTelemetry, logger, iKey, partA);
         this.snapshotScheduler   = new SnapshotScheduler(clientTelemetry, logger, this);
 
         this.logger.setVerbosity(Verbosity.INFO);
@@ -177,10 +177,10 @@ public class SingletonCll implements ICll, IChannel {
      * @param event
      *            The serializable event to log
      */
-    public void log(final PreSerializedEvent event)
+    public void log(final PreSerializedEvent event, EventSensitivity... sensitivities)
     {
         PreSerializedJsonSerializable preSerializedJsonSerializable = new PreSerializedJsonSerializable(event.data, event.partCName, event.partBName, event.attributes);
-        log(preSerializedJsonSerializable);
+        log(preSerializedJsonSerializable, sensitivities);
     }
 
     /**
@@ -189,19 +189,23 @@ public class SingletonCll implements ICll, IChannel {
      * @param event
      *            The serializable event to log
      */
-    public void log(final Base event)
+    public void log(final Base event, EventSensitivity... sensitivities)
     {
-        log(event, null);
+        log(event, null, sensitivities);
     }
 
     public void log(final Base event, Map<String, String> tags) {
+        log(event, tags, null);
+    }
+
+    public void log(final Base event, Map<String, String> tags, EventSensitivity... sensitivities) {
         if (!this.isStarted.get())
         {
             this.logger.error(TAG, "Cll must be started before logging events");
             return;
         }
 
-        final SerializedEvent serializedEvent = this.partA.populate(event, this.correlationVector.GetValue(), tags);
+        final SerializedEvent serializedEvent = this.partA.populate(event, this.correlationVector.GetValue(), tags, sensitivities);
         this.eventHandler.log(serializedEvent);
     }
 
@@ -230,11 +234,11 @@ public class SingletonCll implements ICll, IChannel {
     }
 
     /**
-     * Set's whether we should use the legacy part A fields or not.
+     * Sets whether we should use the legacy part A fields or not.
      * @param value True if we should, false if we should not
      */
-    public void useLagacyCS(boolean value) {
-        partA.useLagacyCS(value);
+    public void useLegacyCS(boolean value) {
+        partA.useLegacyCS(value);
     }
 
     /**

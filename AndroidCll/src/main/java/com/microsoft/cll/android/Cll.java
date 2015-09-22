@@ -1,8 +1,3 @@
-/**
- * Copyright Microsoft Corporation 2014
- * All Rights Reserved
- */
-
 package com.microsoft.cll.android;
 
 import com.microsoft.telemetry.Base;
@@ -54,13 +49,13 @@ public class Cll implements IChannel, ICll
     }
 
     @Override
-    public void log(PreSerializedEvent event) {
-        cll.log(event);
+    public void log(PreSerializedEvent event, EventSensitivity... sensitivities) {
+        cll.log(event, sensitivities);
     }
 
     @Override
-    public void log(Base event) {
-        cll.log(event);
+    public void log(Base event, EventSensitivity... sensitivities) {
+        cll.log(event, sensitivities);
     }
 
     @Override
@@ -79,8 +74,8 @@ public class Cll implements IChannel, ICll
     }
 
     @Override
-    public void useLagacyCS(boolean value) {
-        cll.useLagacyCS(value);
+    public void useLegacyCS(boolean value) {
+        cll.useLegacyCS(value);
     }
 
     @Override
@@ -133,8 +128,8 @@ public class Cll implements IChannel, ICll
      */
     public enum EventLatency
     {
-        NORMAL(1),
-        REALTIME(2);
+        NORMAL(0x100),
+        REALTIME(0x200);
 
         private int value;
 

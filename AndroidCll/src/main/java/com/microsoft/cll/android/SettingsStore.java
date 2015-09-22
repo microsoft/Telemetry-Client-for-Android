@@ -30,13 +30,15 @@ public class SettingsStore {
         BASERETRYPERIOD,
         CONSTANTFORRETRYPERIOD,
         NORMALEVENTMEMORYQUEUESIZE,
-        CLLSETTINGSURL
+        CLLSETTINGSURL,
+        HOSTSETTINGSETAG,
+        CLLSETTINGSETAG
     }
 
     static {
         cllSettings.put(Settings.SYNCREFRESHINTERVAL, 30 * 60);                     // Interval in seconds that we sync settings
         cllSettings.put(Settings.QUEUEDRAININTERVAL, 10);                           // Interval in seconds that we empty the queue
-        cllSettings.put(Settings.SNAPSHOTSCHEDULEINTERVAL, 10 * 60);                // Interval in seconds that we empty the queue
+        cllSettings.put(Settings.SNAPSHOTSCHEDULEINTERVAL, 10 * 60);                // Interval in seconds that we send the snapshot
         cllSettings.put(Settings.MAXEVENTSIZEINBYTES, 64000);                       // Limit of post size in bytes
         cllSettings.put(Settings.MAXEVENTSPERPOST, 500);                            // Max events supported per post
         cllSettings.put(Settings.SAMPLERATE, 10);                                   // Sample Rate is a percentage
@@ -53,6 +55,8 @@ public class SettingsStore {
         cllSettings.put(Settings.CONSTANTFORRETRYPERIOD, 3);
         cllSettings.put(Settings.NORMALEVENTMEMORYQUEUESIZE, 10);
         cllSettings.put(Settings.CLLSETTINGSURL, "https://settings.data.microsoft.com/settings/v2.0/androidLL/app");
+        cllSettings.put(Settings.HOSTSETTINGSETAG, "");
+        cllSettings.put(Settings.CLLSETTINGSETAG, "");
     }
 
     protected static int getCllSettingsAsInt(Settings setting) {

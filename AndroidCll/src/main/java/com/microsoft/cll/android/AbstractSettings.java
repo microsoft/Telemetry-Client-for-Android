@@ -24,10 +24,13 @@ public abstract class AbstractSettings {
     protected final ClientTelemetry clientTelemetry;
     protected final ILogger logger;
     protected String TAG = "AbstractSettings";
+    protected SettingsStore.Settings ETagSettingName;
+    private final PartA partA;
 
-    protected AbstractSettings(ClientTelemetry clientTelemetry, ILogger logger) {
+    protected AbstractSettings(ClientTelemetry clientTelemetry, ILogger logger, PartA partA) {
         this.clientTelemetry = clientTelemetry;
         this.logger = logger;
+        this.partA = partA;
     }
 
     /**
@@ -38,10 +41,9 @@ public abstract class AbstractSettings {
         URL url;
 
         try {
-            url = new URL(endpoint);
+            url = new URL(endpoint + getQueryParameters());
         } catch (MalformedURLException e) {
             logger.error(TAG, "Settings URL is invalid");
-            clientTelemetry.IncrementSettingsHttpFailures();
             return null;
         }
 
@@ -55,6 +57,8 @@ public abstract class AbstractSettings {
                 httpConnection.setConnectTimeout(SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.HTTPTIMEOUTINTERVAL));
                 httpConnection.setRequestMethod("GET");
                 httpConnection.setRequestProperty("Accept", "application/json");
+                httpConnection.setRequestProperty("If-None-Match", SettingsStore.getCllSettingsAsString(ETagSettingName));
+
 
                 long start = Calendar.getInstance(TimeZone.getTimeZone("UTC"), Locale.US).getTimeInMillis();
                 httpConnection.connect();
@@ -63,11 +67,26 @@ public abstract class AbstractSettings {
                 clientTelemetry.SetAvgSettingsResponseLatencyMs((int) diff);
                 clientTelemetry.SetMaxSettingsResponseLatencyMs((int) diff);
 
-                if (httpConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+
+                // Check for success (Only 200 and 304 are considered successful)
+                if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK || httpConnection.getResponseCode() == HttpURLConnection.HTTP_NOT_MODIFIED) {
+                    String ETag = httpConnection.getHeaderField("ETAG");
+                    if(ETag != null && !ETag.isEmpty()) {
+                        SettingsStore.updateCllSetting(ETagSettingName, ETag);
+                    }
+                } else {
                     clientTelemetry.IncrementSettingsHttpFailures();
-                    return null;
                 }
 
+                // Close the connection if this was not a success or there are no new settings
+                if(httpConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    httpConnection.disconnect();
+                    httpConnection = null;
+                    // set connection to null so we don't try/catch every time we
+                    // make a valid connection
+                    connection = null;
+                    return null;
+                }
 
                 BufferedReader input = new BufferedReader(
                         new InputStreamReader(httpConnection.getInputStream()));
@@ -90,8 +109,6 @@ public abstract class AbstractSettings {
             clientTelemetry.IncrementSettingsHttpFailures();
         } catch (JSONException e) {
             logger.error(TAG, e.getMessage());
-        }catch (Exception e) {
-            logger.error(TAG, e.getMessage());
         } finally {
             // close connection if it's still open
             if (connection != null)
@@ -109,6 +126,24 @@ public abstract class AbstractSettings {
         }
 
         return null;
+    }
+
+    /**
+     * Set the query parameters for the settings request
+     * @return
+     */
+    protected String getQueryParameters() {
+        StringBuilder builder = new StringBuilder();
+        builder.append('?');
+        builder.append("os=");
+        builder.append(partA.osName);
+        builder.append("&osVer=");
+        builder.append(partA.osVer);
+        builder.append("&deviceClass=");
+        builder.append(partA.deviceExt.getDeviceClass());
+        builder.append("&deviceId=");
+        builder.append(partA.deviceExt.getLocalId());
+        return builder.toString();
     }
 
     /**

@@ -51,7 +51,7 @@ public class EventHandler extends ScheduledWorker
     }
 
     /**
-    Timed queue drain
+     * Timed queue drain
      */
     @Override
     public void run()
@@ -81,7 +81,7 @@ public class EventHandler extends ScheduledWorker
     }
 
     /**
-     * log an item to it's appropriate storage or attempt to send the event immediately if it is real time
+     * log an item to its appropriate storage or attempt to send the event immediately if it is real time
      * @param event The event to store and send
      * @return True if we added the event to the queue or False if we couldn't add the event
      */
@@ -195,7 +195,7 @@ public class EventHandler extends ScheduledWorker
     //endregion
 
     /**
-     * * Drains the critical event queue and then the normal and sends the events
+     * Drains the critical event queue and then the normal and sends the events
      * @return returns false if paused, otherwise true
      */
     protected boolean send() {

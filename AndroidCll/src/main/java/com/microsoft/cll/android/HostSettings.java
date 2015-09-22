@@ -8,17 +8,18 @@ import java.util.Iterator;
  * These settings are specific to the host application. They include information such as Sample Rate, Persistence, and Latency for their events
  */
 public class HostSettings extends AbstractSettings {
-    private final String baseUrl = "https://settings.data.microsoft.com/settings/v2.0/clltelemetry/";
+    private final String baseUrl = "https://settings.data.microsoft.com/settings/v2.0/telemetry/";
 
-    public HostSettings(ClientTelemetry clientTelemetry, ILogger logger, String iKey) {
-        super(clientTelemetry, logger);
+    public HostSettings(ClientTelemetry clientTelemetry, ILogger logger, String iKey, PartA partA) {
+        super(clientTelemetry, logger, partA);
 
         this.setSettingsEndpoint(iKey);
         this.TAG ="HostSettings";
+        this.ETagSettingName = SettingsStore.Settings.HOSTSETTINGSETAG;
     }
 
     /*
-    Parses the settings returned by OneSettings
+     * Parses the settings returned by OneSettings
      */
     @Override
     public void ParseSettings(JSONObject resultJson) {
@@ -52,7 +53,7 @@ public class HostSettings extends AbstractSettings {
     }
 
     /*
-    Sets the endpoint for where to look for this apps settings.
+     * Sets the endpoint for where to look for this app's settings.
      */
     @Override
     public void setSettingsEndpoint(String iKey) {

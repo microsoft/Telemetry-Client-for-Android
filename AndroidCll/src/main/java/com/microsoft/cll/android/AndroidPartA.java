@@ -69,7 +69,7 @@ public class AndroidPartA extends PartA {
     }
 
     /**
-     * Sets the device unique id using a has of either the device id if present or the mac address.
+     * Sets the device unique id using a hash of either the device id if present or the mac address.
      * Also sets the os version and the locale
      */
     @Override

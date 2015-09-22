@@ -1,12 +1,10 @@
-/**
- * Copyright Microsoft Corporation 2014
- * All Rights Reserved
- */
 package com.microsoft.cll.android;
 
 import com.microsoft.cll.android.Helpers.EventHelper;
 import com.microsoft.telemetry.Base;
 import com.microsoft.telemetry.Envelope;
+import com.microsoft.telemetry.extensions.device;
+import com.microsoft.telemetry.extensions.user;
 
 import org.junit.Test;
 
@@ -44,12 +42,19 @@ public class PartATests
     {
         CustomPartA partA = new CustomPartA(new CustomLogger(), "");
         Base event = (Base) EventHelper.generateBCEvent();
-        try {
-            Envelope envelope = partA.populateEnvelope(event, null, 0, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
-            assert (envelope.getFlags() == 257);
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
+
+        Envelope envelope = partA.populateEnvelope(event, null, 0, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
+        assert (envelope.getFlags() == 0x101);
+        envelope = partA.populateEnvelope(event, "cv", 0, Cll.EventPersistence.NORMAL, Cll.EventLatency.REALTIME);
+        assert (envelope.getFlags() == 0x201);
+        envelope = partA.populateEnvelope(event, "cv", 0, Cll.EventPersistence.CRITICAL, Cll.EventLatency.REALTIME);
+        assert (envelope.getFlags() == 0x202);
+        envelope = partA.populateEnvelope(event, "cv", 0, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL, EventSensitivity.Mark);
+        assert (envelope.getFlags() == 0x80101);
+        envelope = partA.populateEnvelope(event, "cv", 0, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL, EventSensitivity.Hash);
+        assert (envelope.getFlags() == 0x100101);
+        envelope = partA.populateEnvelope(event, "cv", 0, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL, EventSensitivity.Mark, EventSensitivity.Drop);
+        assert (envelope.getFlags() == 0x280101);
     }
 
     /**
@@ -73,6 +78,97 @@ public class PartATests
             e.printStackTrace();
         }
 
+    }
+
+    @Test
+    public void testCS20Population() {
+        CustomPartA partA = new CustomPartA(new CustomLogger(), "iKey");
+        Base event = (Base) EventHelper.generateBCEvent();
+
+        com.microsoft.telemetry.cs2.Envelope envelope = partA.populateLegacyEnvelope(event, "cv", 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL, null);
+        assert(envelope.getVer() == 1);
+        assert (!envelope.getName().isEmpty());
+        assert (!envelope.getTime().isEmpty());
+        assert (envelope.getSampleRate() == 10);
+        assert (!envelope.getSeq().isEmpty());
+        assert (!envelope.getIKey().isEmpty());
+        assert (envelope.getFlags() == 0x101);
+        assert (envelope.getTags() != null);
+        assert (envelope.getTags().get("cV").equals("cv"));
+        assert (!envelope.getDeviceId().isEmpty());
+        assert (!envelope.getOs().isEmpty());
+        assert (!envelope.getOsVer().isEmpty());
+        assert (!envelope.getAppId().isEmpty());
+        assert (!envelope.getAppVer().isEmpty());
+        assert (!envelope.getUserId().isEmpty());
+    }
+
+    @Test
+    public void testCS21Populaation() {
+        CustomPartA partA = new CustomPartA(new CustomLogger(), "iKey");
+        Base event = (Base) EventHelper.generateBCEvent();
+        Envelope envelope = partA.populateEnvelope(event, "cv", 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
+        assert(envelope.getVer().equals("2.1"));
+        assert (!envelope.getName().isEmpty());
+        assert (!envelope.getTime().isEmpty());
+        assert (envelope.getPopSample() == 10);
+        assert (envelope.getSeqNum() != 0);
+        assert (!envelope.getIKey().isEmpty());
+        assert (envelope.getFlags() == 0x101);
+        assert (envelope.getCV().equals("cv"));
+        assert (!envelope.getEpoch().isEmpty());
+        assert (!envelope.getOs().isEmpty());
+        assert (!envelope.getOsVer().isEmpty());
+        assert (!envelope.getAppId().isEmpty());
+        assert (!envelope.getAppVer().isEmpty());
+        assert (!((device)envelope.getExt().get("device")).getLocalId().isEmpty());
+        assert (!((user)envelope.getExt().get("user")).getLocalId().isEmpty());
+    }
+
+    @Test
+    public void testHashPII() {
+        CustomPartA partA = new CustomPartA(new CustomLogger(), "iKey");
+        Base event = (Base) EventHelper.generateBCEvent();
+        Envelope envelopeUnHashed = partA.populateEnvelope(event, "cv", 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
+        Envelope envelope = partA.populateEnvelope(event, "cv", 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL, EventSensitivity.Hash);
+        assert(envelope.getVer().equals("2.1"));
+        assert (envelope.getName().equals(envelopeUnHashed.getName()));
+        assert (!envelope.getTime().isEmpty());
+        assert (envelope.getPopSample() == 10);
+        assert (envelope.getSeqNum() != 0);
+        assert (envelope.getIKey().equals(envelopeUnHashed.getIKey()));
+        assert (partA.HashStringSha256(envelopeUnHashed.getCV()).equals(envelope.getCV()));
+        assert (partA.HashStringSha256(envelopeUnHashed.getEpoch()).equals(envelope.getEpoch()));
+        assert (envelope.getFlags() == 0x100101);
+        assert (!envelope.getOs().isEmpty());
+        assert (!envelope.getOsVer().isEmpty());
+        assert (!envelope.getAppId().isEmpty());
+        assert (!envelope.getAppVer().isEmpty());
+        assert (partA.HashStringSha256(((device)envelopeUnHashed.getExt().get("device")).getLocalId()).equals(((device)envelope.getExt().get("device")).getLocalId()));
+        assert (partA.HashStringSha256(((user)envelopeUnHashed.getExt().get("user")).getLocalId()).equals(((user)envelope.getExt().get("user")).getLocalId()));
+    }
+
+    @Test
+    public void testDropPII() {
+        CustomPartA partA = new CustomPartA(new CustomLogger(), "iKey");
+        Base event = (Base) EventHelper.generateBCEvent();
+        Envelope envelopeUnHashed = partA.populateEnvelope(event, "cv", 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
+        Envelope envelope = partA.populateEnvelope(event, "cv", 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL, EventSensitivity.Drop);
+        assert(envelope.getVer().equals("2.1"));
+        assert (envelope.getName().equals(envelopeUnHashed.getName()));
+        assert (!envelope.getTime().isEmpty());
+        assert (envelope.getPopSample() == 10);
+        assert (envelope.getSeqNum() == 0);
+        assert (envelope.getIKey().equals(envelopeUnHashed.getIKey()));
+        assert (envelope.getCV().isEmpty());
+        assert (envelope.getEpoch().isEmpty());
+        assert (envelope.getFlags() == 0x200101);
+        assert (!envelope.getOs().isEmpty());
+        assert (!envelope.getOsVer().isEmpty());
+        assert (!envelope.getAppId().isEmpty());
+        assert (!envelope.getAppVer().isEmpty());
+        assert ((device)envelope.getExt().get("device")).getLocalId().startsWith("r:");
+        assert ((user)envelope.getExt().get("user")).getLocalId().isEmpty();
     }
 
     /**

@@ -55,6 +55,9 @@ public class SnapshotScheduler extends ScheduledWorker {
     {
         Snapshot snapshot = clientTelemetry.GetEvent();
         cll.log(snapshot);
+
+        // We wait till after log to reset because if we reset before log then the event would have
+        // it's attributes reset as well since we aren't doing a deep copy.
         clientTelemetry.Reset();
     }
 }

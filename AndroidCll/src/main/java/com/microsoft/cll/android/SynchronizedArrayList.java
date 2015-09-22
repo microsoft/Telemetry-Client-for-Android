@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /**
  * A Synchronized array list
  */
-public class SyncronizedArrayList<T> extends ArrayList<T>
+public class SynchronizedArrayList<T> extends ArrayList<T>
 {
     @Override
     public synchronized boolean add(T t) {
