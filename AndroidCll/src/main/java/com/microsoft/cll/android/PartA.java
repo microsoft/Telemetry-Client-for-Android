@@ -220,8 +220,11 @@ public abstract class PartA {
     }
 
     private void scrubPII(Envelope envelope, EventSensitivity... sensitivities) {
-        int level = getSensitivityLevel(sensitivities);
+        if(sensitivities == null) {
+            return;
+        }
 
+        int level = getSensitivityLevel(sensitivities);
         if(level == EventSensitivity.None.getCode()) {
             return;
         }
