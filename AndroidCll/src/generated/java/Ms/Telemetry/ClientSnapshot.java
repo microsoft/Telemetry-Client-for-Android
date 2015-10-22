@@ -2,22 +2,12 @@
  * Generated from Ms.Telemetry.bond (https://github.com/Microsoft/bond)
 */
 package Ms.Telemetry;
+import com.microsoft.telemetry.Domain;
+import com.microsoft.telemetry.IJsonSerializable;
+import com.microsoft.telemetry.JsonHelper;
+
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Map;
-import java.util.List;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.ArrayList;
-import com.microsoft.telemetry.ITelemetry;
-import com.microsoft.telemetry.ITelemetryData;
-import com.microsoft.telemetry.IContext;
-import com.microsoft.telemetry.IJsonSerializable;
-import com.microsoft.telemetry.Base;
-import com.microsoft.telemetry.Data;
-import com.microsoft.telemetry.Domain;
-import com.microsoft.telemetry.Extension;
-import com.microsoft.telemetry.JsonHelper;
 
 /**
  * Data contract class ClientSnapshot.
@@ -99,6 +89,21 @@ public class ClientSnapshot extends Domain implements
      * Backing field for property MaxSettingsResponseLatencyMs.
      */
     private int maxSettingsResponseLatencyMs;
+    
+    /**
+     * Backing field for property VortexFailures5xx.
+     */
+    private int vortexFailures5xx;
+    
+    /**
+     * Backing field for property VortexFailures4xx.
+     */
+    private int vortexFailures4xx;
+    
+    /**
+     * Backing field for property VortexFailuresTimeout.
+     */
+    private int vortexFailuresTimeout;
     
     /**
      * Initializes a new instance of the ClientSnapshot class.
@@ -319,6 +324,48 @@ public class ClientSnapshot extends Domain implements
         this.maxSettingsResponseLatencyMs = value;
     }
     
+    /**
+     * Gets the VortexFailures5xx property.
+     */
+    public int getVortexFailures5xx() {
+        return this.vortexFailures5xx;
+    }
+    
+    /**
+     * Sets the VortexFailures5xx property.
+     */
+    public void setVortexFailures5xx(int value) {
+        this.vortexFailures5xx = value;
+    }
+    
+    /**
+     * Gets the VortexFailures4xx property.
+     */
+    public int getVortexFailures4xx() {
+        return this.vortexFailures4xx;
+    }
+    
+    /**
+     * Sets the VortexFailures4xx property.
+     */
+    public void setVortexFailures4xx(int value) {
+        this.vortexFailures4xx = value;
+    }
+    
+    /**
+     * Gets the VortexFailuresTimeout property.
+     */
+    public int getVortexFailuresTimeout() {
+        return this.vortexFailuresTimeout;
+    }
+    
+    /**
+     * Sets the VortexFailuresTimeout property.
+     */
+    public void setVortexFailuresTimeout(int value) {
+        this.vortexFailuresTimeout = value;
+    }
+    
 
     /**
      * Serializes the beginning of this object to the passed in writer.
@@ -426,6 +473,27 @@ public class ClientSnapshot extends Domain implements
         {
             writer.write(prefix + "\"maxSettingsResponseLatencyMs\":");
             writer.write(JsonHelper.convert(this.maxSettingsResponseLatencyMs));
+            prefix = ",";
+        }
+        
+        if (!(this.vortexFailures5xx == 0))
+        {
+            writer.write(prefix + "\"vortexFailures5xx\":");
+            writer.write(JsonHelper.convert(this.vortexFailures5xx));
+            prefix = ",";
+        }
+        
+        if (!(this.vortexFailures4xx == 0))
+        {
+            writer.write(prefix + "\"vortexFailures4xx\":");
+            writer.write(JsonHelper.convert(this.vortexFailures4xx));
+            prefix = ",";
+        }
+        
+        if (!(this.vortexFailuresTimeout == 0))
+        {
+            writer.write(prefix + "\"vortexFailuresTimeout\":");
+            writer.write(JsonHelper.convert(this.vortexFailuresTimeout));
             prefix = ",";
         }
         

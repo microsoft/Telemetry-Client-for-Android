@@ -76,7 +76,7 @@ public class EventSender {
         } else {
             diff = getTime() - start;
             logger.error(TAG, "Bad Response Code");
-            clientTelemetry.IncrementVortexHttpFailures();
+            clientTelemetry.IncrementVortexHttpFailures(connection.getResponseCode());
             reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
             getResponseBody(reader);
             connection.getErrorStream().close();
@@ -122,6 +122,7 @@ public class EventSender {
         }
         else
         {
+            clientTelemetry.IncrementVortexHttpFailures(-1);
             throw new IOException(NO_HTTPS_CONN);
         }
     }

@@ -52,6 +52,9 @@ public class ClientTelemetry {
         snapshot.setSettingsHttpFailures(0);
         snapshot.setAvgSettingsResponseLatencyMs(0);
         snapshot.setMaxSettingsResponseLatencyMs(0);
+        snapshot.setVortexFailures4xx(0);
+        snapshot.setVortexFailures5xx(0);
+        snapshot.setVortexFailuresTimeout(0);
         settingsCallLatencies.clear();
         vortexCallLatencies.clear();
     }
@@ -90,9 +93,24 @@ public class ClientTelemetry {
         snapshot.setVortexHttpAttempts(failures);
     }
 
-    protected void IncrementVortexHttpFailures() {
+    protected void IncrementVortexHttpFailures(int errorCode) {
         int failures = snapshot.getVortexHttpFailures() + 1;
         snapshot.setVortexHttpFailures(failures);
+
+        if (errorCode >= 400 && errorCode < 500) {
+            int fourHunredFailures = snapshot.getVortexFailures4xx() + 1;
+            snapshot.setVortexFailures4xx(fourHunredFailures);
+        }
+
+        if (errorCode >= 500 && errorCode < 600) {
+            int fiveHunredFailures = snapshot.getVortexFailures5xx() + 1;
+            snapshot.setVortexFailures5xx(fiveHunredFailures);
+        }
+
+        if (errorCode == -1) {
+            int timeoutFailures = snapshot.getVortexFailuresTimeout() + 1;
+            snapshot.setVortexFailuresTimeout(timeoutFailures);
+        }
     }
 
     protected void SetCacheUsagePercent(double percent) {
