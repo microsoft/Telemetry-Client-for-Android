@@ -257,8 +257,8 @@ public abstract class PartA {
             envelope.setSeqNum(0);
         } else if(level == EventSensitivity.Hash.getCode()) {
             // Hash PII
-            ((user)envelope.getExt().get("user")).setLocalId(HashStringSha256(((user) envelope.getExt().get("user")).getLocalId()));
-            ((device)envelope.getExt().get("device")).setLocalId(HashStringSha256(((device) envelope.getExt().get("device")).getLocalId()));
+            ((user)envelope.getExt().get("user")).setLocalId("d:" + HashStringSha256(((user) envelope.getExt().get("user")).getLocalId()));
+            ((device)envelope.getExt().get("device")).setLocalId("d:" + HashStringSha256(((device) envelope.getExt().get("device")).getLocalId()));
             envelope.setCV(HashStringSha256(envelope.getCV()));
             envelope.setEpoch(HashStringSha256(envelope.getEpoch()));
         }

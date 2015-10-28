@@ -144,8 +144,8 @@ public class PartATests
         assert (!envelope.getOsVer().isEmpty());
         assert (!envelope.getAppId().isEmpty());
         assert (!envelope.getAppVer().isEmpty());
-        assert (partA.HashStringSha256(((device)envelopeUnHashed.getExt().get("device")).getLocalId()).equals(((device)envelope.getExt().get("device")).getLocalId()));
-        assert (partA.HashStringSha256(((user)envelopeUnHashed.getExt().get("user")).getLocalId()).equals(((user)envelope.getExt().get("user")).getLocalId()));
+        assert ("d:".concat(partA.HashStringSha256(((device)envelopeUnHashed.getExt().get("device")).getLocalId())).equals(((device) envelope.getExt().get("device")).getLocalId()));
+        assert ("d:".concat(partA.HashStringSha256(((user)envelopeUnHashed.getExt().get("user")).getLocalId())).equals(((user)envelope.getExt().get("user")).getLocalId()));
     }
 
     @Test
