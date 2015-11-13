@@ -1,8 +1,5 @@
 package com.microsoft.cll.android;
 
-/**
- * Created by jmorman on 8/31/2015.
- */
 public enum EventSensitivity {
     None(0x000000),
     Mark(0x080000),

@@ -171,6 +171,18 @@ public class PartATests
         assert ((user)envelope.getExt().get("user")).getLocalId().isEmpty();
     }
 
+    @Test
+    public void testSeqNumberNotIncrementedOnDrop() {
+        CustomPartA partA = new CustomPartA(new CustomLogger(), "iKey");
+        assert(partA.seqCounter.get() == 0);
+        Base event = (Base) EventHelper.generateBCEvent();
+        Envelope envelope = partA.populateEnvelope(event, "cv", 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL, EventSensitivity.Drop);
+        assert (envelope.getSeqNum() == 0);
+        assert(partA.seqCounter.get() == 0);
+        envelope = partA.populateEnvelope(event, "cv", 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
+        assert(partA.seqCounter.get() == 1);
+    }
+
     /**
      * Checks to make sure all session id's are the same across all events
      * @param sequences All the events

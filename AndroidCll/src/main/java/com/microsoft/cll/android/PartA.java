@@ -33,11 +33,11 @@ public abstract class PartA {
     protected final os osExt;
     protected final android androidExt;
     protected final app appExt;
+    protected final AtomicLong seqCounter;
     private final String csVer = "2.1";
     private final String TAG = "PartA";
     private final String salt = "oRq=MAHHHC~6CCe|JfEqRZ+gc0ESI||g2Jlb^PYjc5UYN2P 27z_+21xxd2n";
     private final char[] hexArray = "0123456789ABCDEF".toCharArray();
-    private final AtomicLong seqCounter;
     private EventSerializer serializer;
     protected String appId;
     protected String appVer;
@@ -98,7 +98,7 @@ public abstract class PartA {
         envelope.setName(base.QualifiedName);
         envelope.setPopSample(sampleRate);
         envelope.setEpoch(String.valueOf(epoch));
-        envelope.setSeqNum(setSeq());
+        envelope.setSeqNum(setSeq(sensitivities));
         envelope.setOs(osName);
         envelope.setOsVer(osVer);
         envelope.setData(base);
@@ -125,7 +125,7 @@ public abstract class PartA {
         envelope.setTime(getDateTime());
         envelope.setName(base.QualifiedName);
         envelope.setSampleRate(sampleRate);
-        envelope.setSeq(String.valueOf(epoch) + ":" + String.valueOf(setSeq()));
+        envelope.setSeq(String.valueOf(epoch) + ":" + String.valueOf(setSeq(sensitivities)));
         envelope.setOs(osName);
         envelope.setOsVer(osVer);
         envelope.setData(base);
@@ -254,7 +254,6 @@ public abstract class PartA {
             ((device)envelope.getExt().get("device")).setLocalId("r:" + String.valueOf(random.nextLong()));
             envelope.setCV("");
             envelope.setEpoch("");
-            envelope.setSeqNum(0);
         } else if(level == EventSensitivity.Hash.getCode()) {
             // Hash PII
             ((user)envelope.getExt().get("user")).setLocalId("d:" + HashStringSha256(((user) envelope.getExt().get("user")).getLocalId()));
@@ -341,7 +340,19 @@ public abstract class PartA {
     /**
      * Sets the sequence for this event
      */
-    private long setSeq() {
+    private long setSeq(EventSensitivity... sensitivities) {
+        // If the event sensitivity contains DROP we don't want
+        // to increment the counter, if we did it would look like
+        // we are dropping events because this sequence number
+        // will be missing.
+        if(sensitivities != null) {
+            for(EventSensitivity sensitivity : sensitivities) {
+                if(sensitivity == EventSensitivity.Drop) {
+                    return 0;
+                }
+            }
+        }
+
         long uploadId = seqCounter.incrementAndGet();
         return uploadId;
     }
