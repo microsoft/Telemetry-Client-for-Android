@@ -2,48 +2,53 @@
  * Generated from Ms.Telemetry.bond (https://github.com/Microsoft/bond)
 */
 package Ms.Telemetry;
-import com.microsoft.telemetry.Domain;
-import com.microsoft.telemetry.IJsonSerializable;
-import com.microsoft.telemetry.JsonHelper;
-
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Map;
+import java.util.List;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import com.microsoft.telemetry.ITelemetry;
+import com.microsoft.telemetry.ITelemetryData;
+import com.microsoft.telemetry.IContext;
+import com.microsoft.telemetry.IJsonSerializable;
+import com.microsoft.telemetry.Base;
+import com.microsoft.telemetry.Data;
+import com.microsoft.telemetry.Domain;
+import com.microsoft.telemetry.Extension;
+import com.microsoft.telemetry.JsonHelper;
 
 /**
- * Data contract class ClientSnapshot.
+ * Data contract class CllHeartBeat.
  */
-public class ClientSnapshot extends Domain implements
+public class CllHeartBeat extends Domain implements
     IJsonSerializable
 {
     /**
-     * Backing field for property LastSnapshotTimeStamp.
+     * Backing field for property LastHeartBeat.
      */
-    private String lastSnapshotTimeStamp;
+    private String lastHeartBeat;
     
     /**
-     * Backing field for property Uploader.
+     * Backing field for property EventsQueued.
      */
-    private String uploader;
+    private int eventsQueued;
     
     /**
-     * Backing field for property UploaderVersion.
+     * Backing field for property LogFailures.
      */
-    private String uploaderVersion;
+    private int logFailures;
     
     /**
-     * Backing field for property EventsQueuedForUpload.
+     * Backing field for property QuotaDropCount.
      */
-    private int eventsQueuedForUpload;
+    private int quotaDropCount;
     
     /**
-     * Backing field for property RuntimeErrors.
+     * Backing field for property RejectDropCount.
      */
-    private int runtimeErrors;
-    
-    /**
-     * Backing field for property EventsDroppedDueToQuota.
-     */
-    private int eventsDroppedDueToQuota;
+    private int rejectDropCount;
     
     /**
      * Backing field for property VortexHttpAttempts.
@@ -61,14 +66,14 @@ public class ClientSnapshot extends Domain implements
     private double cacheUsagePercent;
     
     /**
-     * Backing field for property AvgVortexResponseLatencyMs.
+     * Backing field for property AvgVortexLatencyMs.
      */
-    private int avgVortexResponseLatencyMs;
+    private int avgVortexLatencyMs;
     
     /**
-     * Backing field for property MaxVortexResponseLatencyMs.
+     * Backing field for property MaxVortexLatencyMs.
      */
-    private int maxVortexResponseLatencyMs;
+    private int maxVortexLatencyMs;
     
     /**
      * Backing field for property SettingsHttpAttempts.
@@ -81,14 +86,14 @@ public class ClientSnapshot extends Domain implements
     private int settingsHttpFailures;
     
     /**
-     * Backing field for property AvgSettingsResponseLatencyMs.
+     * Backing field for property AvgSettingsLatencyMs.
      */
-    private int avgSettingsResponseLatencyMs;
+    private int avgSettingsLatencyMs;
     
     /**
-     * Backing field for property MaxSettingsResponseLatencyMs.
+     * Backing field for property MaxSettingsLatencyMs.
      */
-    private int maxSettingsResponseLatencyMs;
+    private int maxSettingsLatencyMs;
     
     /**
      * Backing field for property VortexFailures5xx.
@@ -106,96 +111,97 @@ public class ClientSnapshot extends Domain implements
     private int vortexFailuresTimeout;
     
     /**
-     * Initializes a new instance of the ClientSnapshot class.
+     * Backing field for property SettingsFailures5xx.
      */
-    public ClientSnapshot()
+    private int settingsFailures5xx;
+    
+    /**
+     * Backing field for property SettingsFailures4xx.
+     */
+    private int settingsFailures4xx;
+    
+    /**
+     * Backing field for property SettingsFailuresTimeout.
+     */
+    private int settingsFailuresTimeout;
+    
+    /**
+     * Initializes a new instance of the CllHeartBeat class.
+     */
+    public CllHeartBeat()
     {
         this.InitializeFields();
         this.SetupAttributes();
     }
     
     /**
-     * Gets the LastSnapshotTimeStamp property.
+     * Gets the LastHeartBeat property.
      */
-    public String getLastSnapshotTimeStamp() {
-        return this.lastSnapshotTimeStamp;
+    public String getLastHeartBeat() {
+        return this.lastHeartBeat;
     }
     
     /**
-     * Sets the LastSnapshotTimeStamp property.
+     * Sets the LastHeartBeat property.
      */
-    public void setLastSnapshotTimeStamp(String value) {
-        this.lastSnapshotTimeStamp = value;
+    public void setLastHeartBeat(String value) {
+        this.lastHeartBeat = value;
     }
     
     /**
-     * Gets the Uploader property.
+     * Gets the EventsQueued property.
      */
-    public String getUploader() {
-        return this.uploader;
+    public int getEventsQueued() {
+        return this.eventsQueued;
     }
     
     /**
-     * Sets the Uploader property.
+     * Sets the EventsQueued property.
      */
-    public void setUploader(String value) {
-        this.uploader = value;
+    public void setEventsQueued(int value) {
+        this.eventsQueued = value;
     }
     
     /**
-     * Gets the UploaderVersion property.
+     * Gets the LogFailures property.
      */
-    public String getUploaderVersion() {
-        return this.uploaderVersion;
+    public int getLogFailures() {
+        return this.logFailures;
     }
     
     /**
-     * Sets the UploaderVersion property.
+     * Sets the LogFailures property.
      */
-    public void setUploaderVersion(String value) {
-        this.uploaderVersion = value;
+    public void setLogFailures(int value) {
+        this.logFailures = value;
     }
     
     /**
-     * Gets the EventsQueuedForUpload property.
+     * Gets the QuotaDropCount property.
      */
-    public int getEventsQueuedForUpload() {
-        return this.eventsQueuedForUpload;
+    public int getQuotaDropCount() {
+        return this.quotaDropCount;
     }
     
     /**
-     * Sets the EventsQueuedForUpload property.
+     * Sets the QuotaDropCount property.
      */
-    public void setEventsQueuedForUpload(int value) {
-        this.eventsQueuedForUpload = value;
+    public void setQuotaDropCount(int value) {
+        this.quotaDropCount = value;
     }
     
     /**
-     * Gets the RuntimeErrors property.
+     * Gets the RejectDropCount property.
      */
-    public int getRuntimeErrors() {
-        return this.runtimeErrors;
+    public int getRejectDropCount() {
+        return this.rejectDropCount;
     }
     
     /**
-     * Sets the RuntimeErrors property.
+     * Sets the RejectDropCount property.
      */
-    public void setRuntimeErrors(int value) {
-        this.runtimeErrors = value;
-    }
-    
-    /**
-     * Gets the EventsDroppedDueToQuota property.
-     */
-    public int getEventsDroppedDueToQuota() {
-        return this.eventsDroppedDueToQuota;
-    }
-    
-    /**
-     * Sets the EventsDroppedDueToQuota property.
-     */
-    public void setEventsDroppedDueToQuota(int value) {
-        this.eventsDroppedDueToQuota = value;
+    public void setRejectDropCount(int value) {
+        this.rejectDropCount = value;
     }
     
     /**
@@ -241,31 +247,31 @@ public class ClientSnapshot extends Domain implements
     }
     
     /**
-     * Gets the AvgVortexResponseLatencyMs property.
+     * Gets the AvgVortexLatencyMs property.
      */
-    public int getAvgVortexResponseLatencyMs() {
-        return this.avgVortexResponseLatencyMs;
+    public int getAvgVortexLatencyMs() {
+        return this.avgVortexLatencyMs;
     }
     
     /**
-     * Sets the AvgVortexResponseLatencyMs property.
+     * Sets the AvgVortexLatencyMs property.
      */
-    public void setAvgVortexResponseLatencyMs(int value) {
-        this.avgVortexResponseLatencyMs = value;
+    public void setAvgVortexLatencyMs(int value) {
+        this.avgVortexLatencyMs = value;
     }
     
     /**
-     * Gets the MaxVortexResponseLatencyMs property.
+     * Gets the MaxVortexLatencyMs property.
      */
-    public int getMaxVortexResponseLatencyMs() {
-        return this.maxVortexResponseLatencyMs;
+    public int getMaxVortexLatencyMs() {
+        return this.maxVortexLatencyMs;
     }
     
     /**
-     * Sets the MaxVortexResponseLatencyMs property.
+     * Sets the MaxVortexLatencyMs property.
      */
-    public void setMaxVortexResponseLatencyMs(int value) {
-        this.maxVortexResponseLatencyMs = value;
+    public void setMaxVortexLatencyMs(int value) {
+        this.maxVortexLatencyMs = value;
     }
     
     /**
@@ -297,31 +303,31 @@ public class ClientSnapshot extends Domain implements
     }
     
     /**
-     * Gets the AvgSettingsResponseLatencyMs property.
+     * Gets the AvgSettingsLatencyMs property.
      */
-    public int getAvgSettingsResponseLatencyMs() {
-        return this.avgSettingsResponseLatencyMs;
+    public int getAvgSettingsLatencyMs() {
+        return this.avgSettingsLatencyMs;
     }
     
     /**
-     * Sets the AvgSettingsResponseLatencyMs property.
+     * Sets the AvgSettingsLatencyMs property.
      */
-    public void setAvgSettingsResponseLatencyMs(int value) {
-        this.avgSettingsResponseLatencyMs = value;
+    public void setAvgSettingsLatencyMs(int value) {
+        this.avgSettingsLatencyMs = value;
     }
     
     /**
-     * Gets the MaxSettingsResponseLatencyMs property.
+     * Gets the MaxSettingsLatencyMs property.
      */
-    public int getMaxSettingsResponseLatencyMs() {
-        return this.maxSettingsResponseLatencyMs;
+    public int getMaxSettingsLatencyMs() {
+        return this.maxSettingsLatencyMs;
     }
     
     /**
-     * Sets the MaxSettingsResponseLatencyMs property.
+     * Sets the MaxSettingsLatencyMs property.
      */
-    public void setMaxSettingsResponseLatencyMs(int value) {
-        this.maxSettingsResponseLatencyMs = value;
+    public void setMaxSettingsLatencyMs(int value) {
+        this.maxSettingsLatencyMs = value;
     }
     
     /**
@@ -366,6 +372,48 @@ public class ClientSnapshot extends Domain implements
         this.vortexFailuresTimeout = value;
     }
     
+    /**
+     * Gets the SettingsFailures5xx property.
+     */
+    public int getSettingsFailures5xx() {
+        return this.settingsFailures5xx;
+    }
+    
+    /**
+     * Sets the SettingsFailures5xx property.
+     */
+    public void setSettingsFailures5xx(int value) {
+        this.settingsFailures5xx = value;
+    }
+    
+    /**
+     * Gets the SettingsFailures4xx property.
+     */
+    public int getSettingsFailures4xx() {
+        return this.settingsFailures4xx;
+    }
+    
+    /**
+     * Sets the SettingsFailures4xx property.
+     */
+    public void setSettingsFailures4xx(int value) {
+        this.settingsFailures4xx = value;
+    }
+    
+    /**
+     * Gets the SettingsFailuresTimeout property.
+     */
+    public int getSettingsFailuresTimeout() {
+        return this.settingsFailuresTimeout;
+    }
+    
+    /**
+     * Sets the SettingsFailuresTimeout property.
+     */
+    public void setSettingsFailuresTimeout(int value) {
+        this.settingsFailuresTimeout = value;
+    }
+    
 
     /**
      * Serializes the beginning of this object to the passed in writer.
@@ -374,42 +422,38 @@ public class ClientSnapshot extends Domain implements
     protected String serializeContent(Writer writer) throws IOException
     {
         String prefix = super.serializeContent(writer);
-        if (!(this.lastSnapshotTimeStamp == null))
+        if (!(this.lastHeartBeat == null))
         {
-            writer.write(prefix + "\"lastSnapshotTimeStamp\":");
-            writer.write(JsonHelper.convert(this.lastSnapshotTimeStamp));
+            writer.write(prefix + "\"lastHeartBeat\":");
+            writer.write(JsonHelper.convert(this.lastHeartBeat));
             prefix = ",";
         }
         
-        writer.write(prefix + "\"uploader\":");
-        writer.write(JsonHelper.convert(this.uploader));
-        prefix = ",";
-        
-        if (!(this.uploaderVersion == null))
+        if (!(this.eventsQueued == 0))
         {
-            writer.write(prefix + "\"uploaderVersion\":");
-            writer.write(JsonHelper.convert(this.uploaderVersion));
+            writer.write(prefix + "\"eventsQueued\":");
+            writer.write(JsonHelper.convert(this.eventsQueued));
             prefix = ",";
         }
         
-        if (!(this.eventsQueuedForUpload == 0))
+        if (!(this.logFailures == 0))
         {
-            writer.write(prefix + "\"eventsQueuedForUpload\":");
-            writer.write(JsonHelper.convert(this.eventsQueuedForUpload));
+            writer.write(prefix + "\"logFailures\":");
+            writer.write(JsonHelper.convert(this.logFailures));
             prefix = ",";
         }
         
-        if (!(this.runtimeErrors == 0))
+        if (!(this.quotaDropCount == 0))
         {
-            writer.write(prefix + "\"runtimeErrors\":");
-            writer.write(JsonHelper.convert(this.runtimeErrors));
+            writer.write(prefix + "\"quotaDropCount\":");
+            writer.write(JsonHelper.convert(this.quotaDropCount));
             prefix = ",";
         }
         
-        if (!(this.eventsDroppedDueToQuota == 0))
+        if (!(this.rejectDropCount == 0))
         {
-            writer.write(prefix + "\"eventsDroppedDueToQuota\":");
-            writer.write(JsonHelper.convert(this.eventsDroppedDueToQuota));
+            writer.write(prefix + "\"rejectDropCount\":");
+            writer.write(JsonHelper.convert(this.rejectDropCount));
             prefix = ",";
         }
         
@@ -434,17 +478,17 @@ public class ClientSnapshot extends Domain implements
             prefix = ",";
         }
         
-        if (!(this.avgVortexResponseLatencyMs == 0))
+        if (!(this.avgVortexLatencyMs == 0))
         {
-            writer.write(prefix + "\"avgVortexResponseLatencyMs\":");
-            writer.write(JsonHelper.convert(this.avgVortexResponseLatencyMs));
+            writer.write(prefix + "\"avgVortexLatencyMs\":");
+            writer.write(JsonHelper.convert(this.avgVortexLatencyMs));
             prefix = ",";
         }
         
-        if (!(this.maxVortexResponseLatencyMs == 0))
+        if (!(this.maxVortexLatencyMs == 0))
         {
-            writer.write(prefix + "\"maxVortexResponseLatencyMs\":");
-            writer.write(JsonHelper.convert(this.maxVortexResponseLatencyMs));
+            writer.write(prefix + "\"maxVortexLatencyMs\":");
+            writer.write(JsonHelper.convert(this.maxVortexLatencyMs));
             prefix = ",";
         }
         
@@ -462,17 +506,17 @@ public class ClientSnapshot extends Domain implements
             prefix = ",";
         }
         
-        if (!(this.avgSettingsResponseLatencyMs == 0))
+        if (!(this.avgSettingsLatencyMs == 0))
         {
-            writer.write(prefix + "\"avgSettingsResponseLatencyMs\":");
-            writer.write(JsonHelper.convert(this.avgSettingsResponseLatencyMs));
+            writer.write(prefix + "\"avgSettingsLatencyMs\":");
+            writer.write(JsonHelper.convert(this.avgSettingsLatencyMs));
             prefix = ",";
         }
         
-        if (!(this.maxSettingsResponseLatencyMs == 0))
+        if (!(this.maxSettingsLatencyMs == 0))
         {
-            writer.write(prefix + "\"maxSettingsResponseLatencyMs\":");
-            writer.write(JsonHelper.convert(this.maxSettingsResponseLatencyMs));
+            writer.write(prefix + "\"maxSettingsLatencyMs\":");
+            writer.write(JsonHelper.convert(this.maxSettingsLatencyMs));
             prefix = ",";
         }
         
@@ -497,6 +541,27 @@ public class ClientSnapshot extends Domain implements
             prefix = ",";
         }
         
+        if (!(this.settingsFailures5xx == 0))
+        {
+            writer.write(prefix + "\"settingsFailures5xx\":");
+            writer.write(JsonHelper.convert(this.settingsFailures5xx));
+            prefix = ",";
+        }
+        
+        if (!(this.settingsFailures4xx == 0))
+        {
+            writer.write(prefix + "\"settingsFailures4xx\":");
+            writer.write(JsonHelper.convert(this.settingsFailures4xx));
+            prefix = ",";
+        }
+        
+        if (!(this.settingsFailuresTimeout == 0))
+        {
+            writer.write(prefix + "\"settingsFailuresTimeout\":");
+            writer.write(JsonHelper.convert(this.settingsFailuresTimeout));
+            prefix = ",";
+        }
+        
         return prefix;
     }
     
@@ -512,6 +577,6 @@ public class ClientSnapshot extends Domain implements
      * Optionally initializes fields for the current context.
      */
     protected void InitializeFields() {
-        QualifiedName = "Ms.Telemetry.ClientSnapshot";
+        QualifiedName = "Ms.Telemetry.CllHeartBeat";
     }
 }

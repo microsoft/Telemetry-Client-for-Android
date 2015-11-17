@@ -56,7 +56,7 @@ public class SingletonCll implements ICll, IChannel {
 
         this.logger              = logger;
         this.partA               = partA;
-        this.clientTelemetry     = new ClientTelemetry(cllName);
+        this.clientTelemetry     = new ClientTelemetry();
         this.cllEvents           = new ArrayList<ICllEvents>();
         this.correlationVector   = new CorrelationVector();
         this.eventHandler        = new EventHandler(clientTelemetry, cllEvents, logger, eventDir);
