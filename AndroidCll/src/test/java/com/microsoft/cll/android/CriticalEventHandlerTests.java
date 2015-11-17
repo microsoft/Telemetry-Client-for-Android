@@ -21,6 +21,7 @@ public class CriticalEventHandlerTests {
 
     @Rule
     public TestName name = new TestName();
+    private ClientTelemetry clientTelemetry;
 
     @Before
     public void setup() {
@@ -32,7 +33,8 @@ public class CriticalEventHandlerTests {
                 dir.mkdirs();
             }
 
-            criticalEventHandler = new CriticalEventHandler(new CustomLogger(), filePath);
+            clientTelemetry = new ClientTelemetry();
+            criticalEventHandler = new CriticalEventHandler(new CustomLogger(), filePath, clientTelemetry);
         } catch (Exception e) {
             fail("Failed to setup test");
         }
