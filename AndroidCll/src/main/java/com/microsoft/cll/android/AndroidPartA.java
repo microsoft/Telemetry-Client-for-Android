@@ -114,7 +114,7 @@ public class AndroidPartA extends PartA {
         }
 
         osVer = String.format("%s", android.os.Build.VERSION.RELEASE);
-        osExt.setLocale(Locale.getDefault().getDisplayName());
+        osExt.setLocale(Locale.getDefault().toString());
     }
 
     /**
