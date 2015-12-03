@@ -108,10 +108,13 @@ public class EventQueueWriter implements Runnable {
         } catch (IOException e) {
             // Edge case for real time events that try to send but don't have network.
             // In this case we need to write to disk
-            // Force Normal latency so we don't keep looping back to here
             logger.error(TAG, "Cannot send event");
             handler.addToStorage(singleEvent);
+            return;
         }
+
+        // Send was a success so cancel backoff if in progress
+        cancelBackoff();
 
         for(ICllEvents event : cllEvents) {
             event.sendComplete();
@@ -168,8 +171,7 @@ public class EventQueueWriter implements Runnable {
                         return;
                     } else {
                         // Stop retry logic on successful send
-                        future = null;
-                        power = 1;
+                        cancelBackoff();
                     }
                 }
             }
@@ -183,18 +185,22 @@ public class EventQueueWriter implements Runnable {
                 return;
             } else {
                 // Stop retry logic on successful send
-                future = null;
-                power = 1;
+                cancelBackoff();
             }
 
             storage.discard();
         }
 
-        logger.info(TAG, "Sent " + clientTelemetry.snapshot.getEventsQueuedForUpload() + " events.");
+        logger.info(TAG, "Sent " + clientTelemetry.snapshot.getEventsQueued() + " events.");
 
         for(ICllEvents event : cllEvents) {
             event.sendComplete();
         }
+    }
+
+    private void cancelBackoff() {
+        future = null;
+        power = 1;
     }
 
     private boolean sendBatch(String batchedEvents, IStorage storage) {
@@ -247,6 +253,7 @@ public class EventQueueWriter implements Runnable {
                 * Math.pow(SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.BASERETRYPERIOD), power) <= SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.MAXRETRYPERIOD)) {
             power++;
         }
+
         return interval;
     }
 }

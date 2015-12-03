@@ -49,15 +49,17 @@ public abstract class PartA {
     private String iKey;
     private boolean useLegacyCS = false;
     private Random random;
+    private CorrelationVector correlationVector;
 
     /**
      * Set variables that will be used across all Part A's and constant
      */
-    public PartA(ILogger logger, String iKey) {
+    public PartA(ILogger logger, String iKey, CorrelationVector correlationVector) {
         this.logger = logger;
         this.iKey = iKey;
-        this.seqCounter = new AtomicLong(0);
-        this.serializer = new EventSerializer(logger);
+        this.correlationVector = correlationVector;
+        seqCounter = new AtomicLong(0);
+        serializer = new EventSerializer(logger);
 
         userExt = new user();
         deviceExt = new device();
@@ -76,16 +78,16 @@ public abstract class PartA {
      *
      * @param base The base event to package in the Envelope
      */
-    public SerializedEvent populate(final Base base, String cV, Map<String, String> tags, EventSensitivity... sensitivities) {
+    public SerializedEvent populate(final Base base, Map<String, String> tags, EventSensitivity... sensitivities) {
         int sampleRate = Integer.parseInt(SettingsStore.getSetting(base, SettingsStore.Settings.SAMPLERATE).toString());
         Cll.EventPersistence persistence = Cll.EventPersistence.valueOf(SettingsStore.getSetting(base, SettingsStore.Settings.PERSISTENCE).toString().toUpperCase());
         Cll.EventLatency latency = Cll.EventLatency.valueOf(SettingsStore.getSetting(base, SettingsStore.Settings.LATENCY).toString().toUpperCase());
 
         if(useLegacyCS) {
-            com.microsoft.telemetry.cs2.Envelope envelope = populateLegacyEnvelope(base, cV, sampleRate, persistence, latency, tags, sensitivities);
+            com.microsoft.telemetry.cs2.Envelope envelope = populateLegacyEnvelope(base, correlationVector.GetValue(), sampleRate, persistence, latency, tags, sensitivities);
             return populateSerializedEvent(serializer.serialize(envelope), persistence, latency, envelope.getSampleRate(), envelope.getDeviceId());
         } else {
-            Envelope envelope = populateEnvelope(base, cV, sampleRate, persistence, latency, sensitivities);
+            Envelope envelope = populateEnvelope(base, correlationVector.GetValue(), sampleRate, persistence, latency, sensitivities);
             return populateSerializedEvent(serializer.serialize(envelope), persistence, latency, envelope.getPopSample(), deviceExt.getLocalId());
         }
     }
@@ -104,7 +106,11 @@ public abstract class PartA {
         envelope.setData(base);
         envelope.setAppId(appId);
         envelope.setAppVer(appVer);
-        envelope.setCV(cV);
+
+        if(correlationVector.isInitialized) {
+            envelope.setCV(cV);
+        }
+
         envelope.setFlags(setFlags(persistence, latency, base, sensitivities));
         envelope.setIKey(iKey);
         envelope.setExt(createExtensions());
@@ -118,7 +124,9 @@ public abstract class PartA {
             tags = new HashMap<String, String>();
         }
 
-        tags.put("cV", cV);
+        if(correlationVector.isInitialized) {
+            tags.put("cV", cV);
+        }
 
         com.microsoft.telemetry.cs2.Envelope envelope = new com.microsoft.telemetry.cs2.Envelope();
         envelope.setVer(1);
@@ -250,16 +258,26 @@ public abstract class PartA {
 
         if(level == EventSensitivity.Drop.getCode()) {
             // Drop PII
-            ((user)envelope.getExt().get("user")).setLocalId("");
+            ((user)envelope.getExt().get("user")).setLocalId(null);
             ((device)envelope.getExt().get("device")).setLocalId("r:" + String.valueOf(random.nextLong()));
-            envelope.setCV("");
-            envelope.setEpoch("");
+
+            // Only drop cV if it exists.
+            if(correlationVector.isInitialized) {
+                envelope.setCV(null);
+            }
+
+            envelope.setEpoch(null);
             envelope.setSeqNum(0);
         } else if(level == EventSensitivity.Hash.getCode()) {
             // Hash PII
             ((user)envelope.getExt().get("user")).setLocalId("d:" + HashStringSha256(((user) envelope.getExt().get("user")).getLocalId()));
             ((device)envelope.getExt().get("device")).setLocalId("d:" + HashStringSha256(((device) envelope.getExt().get("device")).getLocalId()));
-            envelope.setCV(HashStringSha256(envelope.getCV()));
+
+            // Only hash cV if it exists.
+            if(correlationVector.isInitialized) {
+                envelope.setCV(HashStringSha256(envelope.getCV()));
+            }
+
             envelope.setEpoch(HashStringSha256(envelope.getEpoch()));
         }
     }

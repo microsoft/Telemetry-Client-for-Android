@@ -43,10 +43,10 @@ public class EventQueueWriterTests {
     }
 
     @Test
-    public void sendRealTimEvent() {
+    public void sendRealTimeEvent() {
         SerializedEvent serializedEvent = new SerializedEvent();
         serializedEvent.setSerializedData(EventHelper.singleGoodJsonEvent);
-        EventQueueWriter eventQueueWriter = new EventQueueWriter(url, serializedEvent, new ClientTelemetry("test"), new ArrayList<ICllEvents>(), new CustomLogger(), null, null);
+        EventQueueWriter eventQueueWriter = new EventQueueWriter(url, serializedEvent, new ClientTelemetry(), new ArrayList<ICllEvents>(), new CustomLogger(), null, null);
         eventQueueWriter.setSender(eventSenderOverride);
         eventQueueWriter.run();
         assert(eventSenderOverride.getNumberOfEventsAccepted() == 1);
@@ -66,7 +66,7 @@ public class EventQueueWriterTests {
         ArrayList<IStorage> storages = new ArrayList<IStorage>();
         storages.add(fs);
 
-        EventQueueWriter eventQueueWriter = new EventQueueWriter(url, storages, new ClientTelemetry("test"), new ArrayList<ICllEvents>(), new CustomLogger(), scheduledExecutorService);
+        EventQueueWriter eventQueueWriter = new EventQueueWriter(url, storages, new ClientTelemetry(), new ArrayList<ICllEvents>(), new CustomLogger(), scheduledExecutorService);
         eventQueueWriter.setSender(eventSenderOverride);
         eventQueueWriter.run();
 
@@ -92,7 +92,7 @@ public class EventQueueWriterTests {
 
         eventSenderOverride.disableNetwork = true;
 
-        EventQueueWriter eventQueueWriter = new EventQueueWriter(url, storages, new ClientTelemetry("test"), new ArrayList<ICllEvents>(), new CustomLogger(), scheduledExecutorService);
+        EventQueueWriter eventQueueWriter = new EventQueueWriter(url, storages, new ClientTelemetry(), new ArrayList<ICllEvents>(), new CustomLogger(), scheduledExecutorService);
         eventQueueWriter.setSender(eventSenderOverride);
         scheduledExecutorService.submit(eventQueueWriter);
         try {
@@ -105,7 +105,7 @@ public class EventQueueWriterTests {
 
     @Test
     public void testBackoffInterval() {
-        EventQueueWriter eventQueueWriter = new EventQueueWriter(url, null, new ClientTelemetry("test"), new ArrayList<ICllEvents>(), new CustomLogger(), null);
+        EventQueueWriter eventQueueWriter = new EventQueueWriter(url, null, new ClientTelemetry(), new ArrayList<ICllEvents>(), new CustomLogger(), null);
         int defaultConstant = SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.CONSTANTFORRETRYPERIOD);
         int defaultBase = SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.BASERETRYPERIOD);
         int max = SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.MAXRETRYPERIOD);

@@ -64,8 +64,8 @@ public abstract class AbstractSettings {
                 httpConnection.connect();
                 long finish = Calendar.getInstance(TimeZone.getTimeZone("UTC"), Locale.US).getTimeInMillis();
                 long diff = finish - start;
-                clientTelemetry.SetAvgSettingsResponseLatencyMs((int) diff);
-                clientTelemetry.SetMaxSettingsResponseLatencyMs((int) diff);
+                clientTelemetry.SetAvgSettingsLatencyMs((int) diff);
+                clientTelemetry.SetMaxSettingsLatencyMs((int) diff);
 
 
                 // Check for success (Only 200 and 304 are considered successful)
@@ -75,7 +75,7 @@ public abstract class AbstractSettings {
                         SettingsStore.updateCllSetting(ETagSettingName, ETag);
                     }
                 } else {
-                    clientTelemetry.IncrementSettingsHttpFailures();
+                    clientTelemetry.IncrementSettingsHttpFailures(httpConnection.getResponseCode());
                 }
 
                 // Close the connection if this was not a success or there are no new settings
@@ -106,7 +106,7 @@ public abstract class AbstractSettings {
             }
         } catch (IOException e) {
             logger.error(TAG, e.getMessage());
-            clientTelemetry.IncrementSettingsHttpFailures();
+            clientTelemetry.IncrementSettingsHttpFailures(-1);
         } catch (JSONException e) {
             logger.error(TAG, e.getMessage());
         } finally {

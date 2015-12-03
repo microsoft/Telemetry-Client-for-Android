@@ -39,7 +39,7 @@ public class EventHandlerTests {
     public void testDeviceInSampleGroup() {
         CriticalEventHandlerOverride criticalEventHandlerOverride = new CriticalEventHandlerOverride(new CustomLogger(), filePath);
         NormalEventHandlerOverride normalEventHandlerOverride = new NormalEventHandlerOverride(new CustomLogger(), filePath);
-        EventHandler eventHandler = new EventHandler(new ClientTelemetry("test"), new ArrayList<ICllEvents>(), new CustomLogger(), normalEventHandlerOverride, criticalEventHandlerOverride);
+        EventHandler eventHandler = new EventHandler(new ClientTelemetry(), new ArrayList<ICllEvents>(), new CustomLogger(), normalEventHandlerOverride, criticalEventHandlerOverride);
         SerializedEvent event = new SerializedEvent();
         event.setSerializedData(EventHelper.singleGoodJsonEvent);
         event.setDeviceId("0000000000");  // Sample Group 0
@@ -55,7 +55,7 @@ public class EventHandlerTests {
         // Create new event handler to reset the deviceId since we store it in event handler after first call
         CriticalEventHandlerOverride criticalEventHandlerOverride = new CriticalEventHandlerOverride(new CustomLogger(), filePath);
         NormalEventHandlerOverride normalEventHandlerOverride = new NormalEventHandlerOverride(new CustomLogger(), filePath);
-        EventHandler eventHandler = new EventHandler(new ClientTelemetry("test"), new ArrayList<ICllEvents>(), new CustomLogger(), normalEventHandlerOverride, criticalEventHandlerOverride);
+        EventHandler eventHandler = new EventHandler(new ClientTelemetry(), new ArrayList<ICllEvents>(), new CustomLogger(), normalEventHandlerOverride, criticalEventHandlerOverride);
         SerializedEvent event = new SerializedEvent();
         event.setSerializedData(EventHelper.singleGoodJsonEvent);
         event.setDeviceId("000000099"); // Sample Group 53
@@ -70,7 +70,7 @@ public class EventHandlerTests {
     public void testAddToStorage() {
         CriticalEventHandlerOverride criticalEventHandlerOverride = new CriticalEventHandlerOverride(new CustomLogger(), filePath);
         NormalEventHandlerOverride normalEventHandlerOverride = new NormalEventHandlerOverride(new CustomLogger(), filePath);
-        EventHandler eventHandler = new EventHandler(new ClientTelemetry("test"), new ArrayList<ICllEvents>(), new CustomLogger(), normalEventHandlerOverride, criticalEventHandlerOverride);
+        EventHandler eventHandler = new EventHandler(new ClientTelemetry(), new ArrayList<ICllEvents>(), new CustomLogger(), normalEventHandlerOverride, criticalEventHandlerOverride);
         SerializedEvent event = new SerializedEvent();
         event.setSerializedData(EventHelper.singleGoodJsonEvent);
         event.setDeviceId("0000000000");  // Sample Group 0
@@ -96,7 +96,7 @@ public class EventHandlerTests {
     public void testNullDeviceId() {
         CriticalEventHandlerOverride criticalEventHandlerOverride = new CriticalEventHandlerOverride(new CustomLogger(), filePath);
         NormalEventHandlerOverride normalEventHandlerOverride = new NormalEventHandlerOverride(new CustomLogger(), filePath);
-        EventHandler eventHandler = new EventHandler(new ClientTelemetry("test"), new ArrayList<ICllEvents>(), new CustomLogger(), normalEventHandlerOverride, criticalEventHandlerOverride);
+        EventHandler eventHandler = new EventHandler(new ClientTelemetry(), new ArrayList<ICllEvents>(), new CustomLogger(), normalEventHandlerOverride, criticalEventHandlerOverride);
         SerializedEvent event = new SerializedEvent();
         event.setSerializedData(EventHelper.singleGoodJsonEvent);
         event.setDeviceId(null);  // Sample Group 0

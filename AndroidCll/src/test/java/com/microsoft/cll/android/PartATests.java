@@ -4,6 +4,7 @@ import com.microsoft.cll.android.Helpers.EventHelper;
 import com.microsoft.telemetry.Base;
 import com.microsoft.telemetry.Envelope;
 import com.microsoft.telemetry.extensions.device;
+import com.microsoft.telemetry.extensions.os;
 import com.microsoft.telemetry.extensions.user;
 
 import org.junit.Test;
@@ -23,7 +24,7 @@ public class PartATests
     @Test
     public void testSettingIKey()
     {
-        CustomPartA partA = new CustomPartA(new CustomLogger(), "testikey");
+        CustomPartA partA = new CustomPartA(new CustomLogger(), "testikey", new CorrelationVector());
         Base event = (Base) EventHelper.generateBCEvent();
         try {
             Envelope envelope = partA.populateEnvelope(event, null, 0, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
@@ -40,7 +41,7 @@ public class PartATests
     @Test
     public void testSettingFlags()
     {
-        CustomPartA partA = new CustomPartA(new CustomLogger(), "");
+        CustomPartA partA = new CustomPartA(new CustomLogger(), "", new CorrelationVector());
         Base event = (Base) EventHelper.generateBCEvent();
 
         Envelope envelope = partA.populateEnvelope(event, null, 0, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
@@ -62,7 +63,7 @@ public class PartATests
      */
     @Test
     public void testSequenceField() {
-        CustomPartA partA = new CustomPartA(new CustomLogger(), "");
+        CustomPartA partA = new CustomPartA(new CustomLogger(), "", new CorrelationVector());
         Base event = (Base) EventHelper.generateBCEvent();
         String[] sequences = new String[25];
 
@@ -82,10 +83,12 @@ public class PartATests
 
     @Test
     public void testCS20Population() {
-        CustomPartA partA = new CustomPartA(new CustomLogger(), "iKey");
+        CorrelationVector correlationVector = new CorrelationVector();
+        correlationVector.Init();
+        CustomPartA partA = new CustomPartA(new CustomLogger(), "iKey", correlationVector);
         Base event = (Base) EventHelper.generateBCEvent();
 
-        com.microsoft.telemetry.cs2.Envelope envelope = partA.populateLegacyEnvelope(event, "cv", 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL, null);
+        com.microsoft.telemetry.cs2.Envelope envelope = partA.populateLegacyEnvelope(event, correlationVector.GetValue(), 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL, null);
         assert(envelope.getVer() == 1);
         assert (!envelope.getName().isEmpty());
         assert (!envelope.getTime().isEmpty());
@@ -94,7 +97,7 @@ public class PartATests
         assert (!envelope.getIKey().isEmpty());
         assert (envelope.getFlags() == 0x101);
         assert (envelope.getTags() != null);
-        assert (envelope.getTags().get("cV").equals("cv"));
+        assert (envelope.getTags().get("cV").equals(correlationVector.GetValue()));
         assert (!envelope.getDeviceId().isEmpty());
         assert (!envelope.getOs().isEmpty());
         assert (!envelope.getOsVer().isEmpty());
@@ -105,9 +108,11 @@ public class PartATests
 
     @Test
     public void testCS21Populaation() {
-        CustomPartA partA = new CustomPartA(new CustomLogger(), "iKey");
+        CorrelationVector correlationVector = new CorrelationVector();
+        correlationVector.Init();
+        CustomPartA partA = new CustomPartA(new CustomLogger(), "iKey", correlationVector);
         Base event = (Base) EventHelper.generateBCEvent();
-        Envelope envelope = partA.populateEnvelope(event, "cv", 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
+        Envelope envelope = partA.populateEnvelope(event, correlationVector.GetValue(), 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
         assert(envelope.getVer().equals("2.1"));
         assert (!envelope.getName().isEmpty());
         assert (!envelope.getTime().isEmpty());
@@ -115,7 +120,7 @@ public class PartATests
         assert (envelope.getSeqNum() != 0);
         assert (!envelope.getIKey().isEmpty());
         assert (envelope.getFlags() == 0x101);
-        assert (envelope.getCV().equals("cv"));
+        assert (envelope.getCV().equals(correlationVector.GetValue()));
         assert (!envelope.getEpoch().isEmpty());
         assert (!envelope.getOs().isEmpty());
         assert (!envelope.getOsVer().isEmpty());
@@ -127,10 +132,12 @@ public class PartATests
 
     @Test
     public void testHashPII() {
-        CustomPartA partA = new CustomPartA(new CustomLogger(), "iKey");
+        CorrelationVector correlationVector = new CorrelationVector();
+        correlationVector.Init();
+        CustomPartA partA = new CustomPartA(new CustomLogger(), "iKey", correlationVector);
         Base event = (Base) EventHelper.generateBCEvent();
-        Envelope envelopeUnHashed = partA.populateEnvelope(event, "cv", 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
-        Envelope envelope = partA.populateEnvelope(event, "cv", 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL, EventSensitivity.Hash);
+        Envelope envelopeUnHashed = partA.populateEnvelope(event, correlationVector.GetValue(), 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
+        Envelope envelope = partA.populateEnvelope(event, correlationVector.GetValue(), 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL, EventSensitivity.Hash);
         assert(envelope.getVer().equals("2.1"));
         assert (envelope.getName().equals(envelopeUnHashed.getName()));
         assert (!envelope.getTime().isEmpty());
@@ -150,25 +157,85 @@ public class PartATests
 
     @Test
     public void testDropPII() {
-        CustomPartA partA = new CustomPartA(new CustomLogger(), "iKey");
+        CorrelationVector correlationVector = new CorrelationVector();
+        correlationVector.Init();
+        CustomPartA partA = new CustomPartA(new CustomLogger(), "iKey", correlationVector);
         Base event = (Base) EventHelper.generateBCEvent();
-        Envelope envelopeUnHashed = partA.populateEnvelope(event, "cv", 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
-        Envelope envelope = partA.populateEnvelope(event, "cv", 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL, EventSensitivity.Drop);
+        Envelope envelopeUnHashed = partA.populateEnvelope(event, correlationVector.GetValue(), 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
+        Envelope envelope = partA.populateEnvelope(event, correlationVector.GetValue(), 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL, EventSensitivity.Drop);
         assert(envelope.getVer().equals("2.1"));
         assert (envelope.getName().equals(envelopeUnHashed.getName()));
         assert (!envelope.getTime().isEmpty());
         assert (envelope.getPopSample() == 10);
         assert (envelope.getSeqNum() == 0);
         assert (envelope.getIKey().equals(envelopeUnHashed.getIKey()));
-        assert (envelope.getCV().isEmpty());
-        assert (envelope.getEpoch().isEmpty());
+        assert (envelope.getCV() == null);
+        assert (envelope.getEpoch() == null);
         assert (envelope.getFlags() == 0x200101);
         assert (!envelope.getOs().isEmpty());
         assert (!envelope.getOsVer().isEmpty());
         assert (!envelope.getAppId().isEmpty());
         assert (!envelope.getAppVer().isEmpty());
         assert ((device)envelope.getExt().get("device")).getLocalId().startsWith("r:");
-        assert ((user)envelope.getExt().get("user")).getLocalId().isEmpty();
+        assert (((user)envelope.getExt().get("user")).getLocalId() == null);
+    }
+
+    @Test
+    public void testLocale() {
+        CorrelationVector correlationVector = new CorrelationVector();
+        CustomPartA partA = new CustomPartA(new CustomLogger(), "iKey", correlationVector);
+        Base event = (Base) EventHelper.generateBCEvent();
+        Envelope envelope = partA.populateEnvelope(event, correlationVector.GetValue(), 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
+        assert(((os)envelope.getExt().get("os")).getLocale().equals("en-US"));
+    }
+
+    @Test
+    public void testCorrelationVectorNotAutoInit() {
+        CorrelationVector correlationVector = new CorrelationVector();
+        CustomPartA partA = new CustomPartA(new CustomLogger(), "iKey", correlationVector);
+        Base event = (Base) EventHelper.generateBCEvent();
+        Envelope envelope = partA.populateEnvelope(event, correlationVector.GetValue(), 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
+        assert(envelope.getCV() == null);
+    }
+
+    @Test
+    public void testInitCorrelationVector() {
+        CorrelationVector correlationVector = new CorrelationVector();
+        correlationVector.Init();
+        CustomPartA partA = new CustomPartA(new CustomLogger(), "iKey", correlationVector);
+        Base event = (Base) EventHelper.generateBCEvent();
+        Envelope envelope = partA.populateEnvelope(event, correlationVector.GetValue(), 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
+        assert(!envelope.getCV().equals("") && correlationVector.IsValidVector(envelope.getCV()));
+    }
+
+    @Test
+    public void testInitCorrelationVectorFromIncrement() {
+        CorrelationVector correlationVector = new CorrelationVector();
+        correlationVector.Increment();
+        CustomPartA partA = new CustomPartA(new CustomLogger(), "iKey", correlationVector);
+        Base event = (Base) EventHelper.generateBCEvent();
+        Envelope envelope = partA.populateEnvelope(event, correlationVector.GetValue(), 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
+        assert(!envelope.getCV().equals("") && correlationVector.IsValidVector(envelope.getCV()));
+    }
+
+    @Test
+    public void testInitCorrelationVectorFromExtend() {
+        CorrelationVector correlationVector = new CorrelationVector();
+        correlationVector.Extend();
+        CustomPartA partA = new CustomPartA(new CustomLogger(), "iKey", correlationVector);
+        Base event = (Base) EventHelper.generateBCEvent();
+        Envelope envelope = partA.populateEnvelope(event, correlationVector.GetValue(), 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
+        assert(!envelope.getCV().equals("") && correlationVector.IsValidVector(envelope.getCV()));
+    }
+
+    @Test
+    public void testInitCorrelationVectorFromSet() {
+        CorrelationVector correlationVector = new CorrelationVector();
+        correlationVector.SetValue("AAAAAAAAAAAAAAAA.1");
+        CustomPartA partA = new CustomPartA(new CustomLogger(), "iKey", correlationVector);
+        Base event = (Base) EventHelper.generateBCEvent();
+        Envelope envelope = partA.populateEnvelope(event, correlationVector.GetValue(), 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
+        assert(!envelope.getCV().equals("") && correlationVector.IsValidVector(envelope.getCV()));
     }
 
     /**

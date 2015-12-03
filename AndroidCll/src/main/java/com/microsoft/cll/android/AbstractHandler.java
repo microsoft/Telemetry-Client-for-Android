@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public abstract class AbstractHandler {
     private final String TAG = "AbstractHandler";
     protected final ILogger logger;
+    protected final ClientTelemetry clientTelemetry;
     protected FileStorage fileStorage;
     protected String filePath;
 
@@ -20,9 +21,10 @@ public abstract class AbstractHandler {
     protected final static String normalEventFileExtension = ".norm.cllevent";
     protected static AtomicLong totalStorageUsed = new AtomicLong(0);
 
-    public AbstractHandler(ILogger logger, String filePath) {
+    public AbstractHandler(ILogger logger, String filePath, ClientTelemetry clientTelemetry) {
         this.filePath       = filePath;
         this.logger         = logger;
+        this.clientTelemetry = clientTelemetry;
 
         setFileStorageUsed();
     }

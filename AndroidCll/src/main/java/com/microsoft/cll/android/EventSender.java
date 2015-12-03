@@ -1,5 +1,8 @@
 package com.microsoft.cll.android;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -76,14 +79,14 @@ public class EventSender {
         } else {
             diff = getTime() - start;
             logger.error(TAG, "Bad Response Code");
-            clientTelemetry.IncrementVortexHttpFailures();
+            clientTelemetry.IncrementVortexHttpFailures(connection.getResponseCode());
             reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
             getResponseBody(reader);
             connection.getErrorStream().close();
         }
 
-        clientTelemetry.SetAvgVortexResponseLatencyMs((int)diff); // ~25 days worth of ms can be stored in an int
-        clientTelemetry.SetMaxVortexResponseLatencyMs((int)diff);
+        clientTelemetry.SetAvgVortexLatencyMs((int) diff); // ~25 days worth of ms can be stored in an int
+        clientTelemetry.SetMaxVortexLatencyMs((int) diff);
     }
 
     /**
@@ -122,6 +125,7 @@ public class EventSender {
         }
         else
         {
+            clientTelemetry.IncrementVortexHttpFailures(-1);
             throw new IOException(NO_HTTPS_CONN);
         }
     }
@@ -140,6 +144,17 @@ public class EventSender {
             }
         } catch(IOException e) {
             logger.error(TAG, "Couldn't read response body");
+        }
+
+        // Check to see if any events were rejected
+        try {
+            JSONObject jsonObject = new JSONObject(responseBuilder.toString());
+            int rejectCount = jsonObject.getInt("rej");
+            clientTelemetry.IncremenetRejectDropCount(rejectCount);
+        } catch (JSONException e) {
+            logger.info(TAG, e.getMessage());
+        } catch (RuntimeException e) {
+            logger.info(TAG, e.getMessage());
         }
 
         logger.info(TAG, responseBuilder.toString());
