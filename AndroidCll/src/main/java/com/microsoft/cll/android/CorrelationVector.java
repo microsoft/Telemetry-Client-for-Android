@@ -10,18 +10,21 @@ public class CorrelationVector
     private String baseVector;
     private int currentVector;
 
-    private final String base64CharSet;
-    private final int id0Length;
+    private final String base64CharSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";;
+    private final int id0Length = 16;
+    boolean isInitialized = false;
 
     /**
-     * Sets up the vector class with a random base vector and current vector count of 0
+     * Sets up the vector class with a random base vector and current vector count of 1
      */
     public CorrelationVector()
     {
         currentVector               = 1;
-        id0Length                   = 16;
-        base64CharSet               = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
         baseVector                  = SeedCorrelationVector();
+    }
+
+    public void Init() {
+        isInitialized = true;
     }
 
     /**
@@ -62,6 +65,7 @@ public class CorrelationVector
      */
     public synchronized String Extend()
     {
+        isInitialized = true;
         if(CanExtend()) {
             baseVector = GetValue();
             currentVector = 1;
@@ -83,6 +87,7 @@ public class CorrelationVector
      */
     public synchronized String Increment()
     {
+        isInitialized = true;
         int newVector = currentVector + 1;
         // Check if we can increment
         if(CanIncrement(newVector)) {
@@ -95,7 +100,7 @@ public class CorrelationVector
     /**
      * Checks to see if the correlation vector is valid
      */
-    private boolean IsValidVector(String vector)
+    boolean IsValidVector(String vector)
     {
         if(vector.length() > SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.MAXCORRELATIONVECTORLENGTH)) {
             return false;
@@ -124,6 +129,7 @@ public class CorrelationVector
 
         return result;
     }
+
     /**
      * Sets the base and current vector values
      */
@@ -133,6 +139,7 @@ public class CorrelationVector
             int lastDot = vector.lastIndexOf(".");
             baseVector = vector.substring(0, lastDot);
             currentVector = Integer.parseInt(vector.substring(lastDot + 1));
+            isInitialized = true;
         } else {
             throw new IllegalArgumentException("Cannot set invalid correlation vector value");
         }

@@ -18,9 +18,9 @@ public class Cll implements IChannel, ICll
     /**
      * Initializes the CLL with the given provider.
      */
-    protected Cll(String iKey, ILogger logger, String cllName, String eventDir, PartA partA)
+    protected Cll(String iKey, ILogger logger, String cllName, String eventDir, PartA partA, CorrelationVector correlationVector)
     {
-        cll = SingletonCll.getInstance(iKey, logger, cllName, eventDir, partA);
+        cll = SingletonCll.getInstance(iKey, logger, cllName, eventDir, partA, correlationVector);
     }
 
     @Override
@@ -91,6 +91,10 @@ public class Cll implements IChannel, ICll
     @Override
     public void SubscribeCllEvents(ICllEvents cllEvents) {
         cll.SubscribeCllEvents(cllEvents);
+    }
+
+    public CorrelationVector getCorrelationVector() {
+        return ((SingletonCll)cll).correlationVector;
     }
 
     /**

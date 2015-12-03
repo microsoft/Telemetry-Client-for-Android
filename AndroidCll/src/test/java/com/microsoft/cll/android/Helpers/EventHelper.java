@@ -1,6 +1,7 @@
 package com.microsoft.cll.android.Helpers;
 
 import com.microsoft.cll.android.Cll;
+import com.microsoft.cll.android.CorrelationVector;
 import com.microsoft.cll.android.CustomLogger;
 import com.microsoft.cll.android.CustomPartA;
 import com.microsoft.telemetry.IJsonSerializable;
@@ -52,7 +53,7 @@ public class EventHelper {
         mediaUsage.setMediaType("Video");
         helloWorld.setBaseData(mediaUsage);
 
-        CustomPartA partA = new CustomPartA(new CustomLogger(), "");
+        CustomPartA partA = new CustomPartA(new CustomLogger(), "", new CorrelationVector());
         return partA.populateEnvelope(helloWorld, null, 0, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
 
     }
@@ -64,7 +65,7 @@ public class EventHelper {
         helloWorld.setHelloWorldMessage("some extra message information");
         helloWorld.setHelloWorldRating(5);
 
-        CustomPartA partA = new CustomPartA(new CustomLogger(), "");
+        CustomPartA partA = new CustomPartA(new CustomLogger(), "", new CorrelationVector());
         return partA.populateEnvelope(helloWorld, null, 0, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
     }
 }

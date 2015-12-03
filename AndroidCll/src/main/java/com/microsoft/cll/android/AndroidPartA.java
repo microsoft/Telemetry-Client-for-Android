@@ -30,8 +30,8 @@ public class AndroidPartA extends PartA {
      *
      * @param logger
      */
-    public AndroidPartA(ILogger logger, String iKey, Context context) {
-        super(logger, iKey);
+    public AndroidPartA(ILogger logger, String iKey, Context context, CorrelationVector correlationVector) {
+        super(logger, iKey, correlationVector);
         this.appContext = context;
         PopulateConstantValues();
     }
@@ -114,7 +114,7 @@ public class AndroidPartA extends PartA {
         }
 
         osVer = String.format("%s", android.os.Build.VERSION.RELEASE);
-        osExt.setLocale(Locale.getDefault().toString());
+        osExt.setLocale(Locale.getDefault().toString().replaceAll("_", "-"));
     }
 
     /**
