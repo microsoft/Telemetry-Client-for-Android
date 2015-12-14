@@ -65,7 +65,7 @@ public class CorrelationVector
      */
     public synchronized String Extend()
     {
-        isInitialized = true;
+        Init();
         if(CanExtend()) {
             baseVector = GetValue();
             currentVector = 1;
@@ -79,6 +79,10 @@ public class CorrelationVector
      */
     public String GetValue()
     {
+        if(!isInitialized) {
+            return null;
+        }
+
         return baseVector + "." + currentVector;
     }
 
@@ -87,7 +91,7 @@ public class CorrelationVector
      */
     public synchronized String Increment()
     {
-        isInitialized = true;
+        Init();
         int newVector = currentVector + 1;
         // Check if we can increment
         if(CanIncrement(newVector)) {
@@ -100,7 +104,7 @@ public class CorrelationVector
     /**
      * Checks to see if the correlation vector is valid
      */
-    boolean IsValidVector(String vector)
+    boolean IsValid(String vector)
     {
         if(vector.length() > SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.MAXCORRELATIONVECTORLENGTH)) {
             return false;
@@ -135,11 +139,11 @@ public class CorrelationVector
      */
     public synchronized void SetValue(String vector)
     {
-        if(IsValidVector(vector)) {
+        if(IsValid(vector)) {
             int lastDot = vector.lastIndexOf(".");
             baseVector = vector.substring(0, lastDot);
             currentVector = Integer.parseInt(vector.substring(lastDot + 1));
-            isInitialized = true;
+            Init();
         } else {
             throw new IllegalArgumentException("Cannot set invalid correlation vector value");
         }

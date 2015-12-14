@@ -33,6 +33,8 @@ public class EventSerializer {
         }
 
         String serialized = writer.toString() + "\r\n";
+        logger.info(TAG, serialized);
+
         return serialized;
     }
 }

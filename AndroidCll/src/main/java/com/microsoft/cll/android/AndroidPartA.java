@@ -141,21 +141,12 @@ public class AndroidPartA extends PartA {
             final PackageInfo info = manager.getPackageInfo(
                     appContext.getPackageName(), 0);
             appVer = info.versionName;
-            populateAppId(info.packageName, info.versionName);
+            appId = info.packageName;
         }
         catch (final PackageManager.NameNotFoundException e)
         {
             logger.error(TAG, "Could not get package name");
         }
-    }
-
-    /**
-     * Populates the device id using the app id and app version
-     * @param appId The application id
-     * @param appVer The application version
-     */
-    private void populateAppId(String appId, String appVer) {
-        this.appId = String.format("A:%s_%s_%s", appId, appVer, System.getProperty("os.arch"));
     }
 
     /**

@@ -205,7 +205,7 @@ public class PartATests
         CustomPartA partA = new CustomPartA(new CustomLogger(), "iKey", correlationVector);
         Base event = (Base) EventHelper.generateBCEvent();
         Envelope envelope = partA.populateEnvelope(event, correlationVector.GetValue(), 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
-        assert(!envelope.getCV().equals("") && correlationVector.IsValidVector(envelope.getCV()));
+        assert(!envelope.getCV().equals("") && correlationVector.IsValid(envelope.getCV()));
     }
 
     @Test
@@ -215,7 +215,7 @@ public class PartATests
         CustomPartA partA = new CustomPartA(new CustomLogger(), "iKey", correlationVector);
         Base event = (Base) EventHelper.generateBCEvent();
         Envelope envelope = partA.populateEnvelope(event, correlationVector.GetValue(), 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
-        assert(!envelope.getCV().equals("") && correlationVector.IsValidVector(envelope.getCV()));
+        assert(!envelope.getCV().equals("") && correlationVector.IsValid(envelope.getCV()));
     }
 
     @Test
@@ -225,7 +225,7 @@ public class PartATests
         CustomPartA partA = new CustomPartA(new CustomLogger(), "iKey", correlationVector);
         Base event = (Base) EventHelper.generateBCEvent();
         Envelope envelope = partA.populateEnvelope(event, correlationVector.GetValue(), 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
-        assert(!envelope.getCV().equals("") && correlationVector.IsValidVector(envelope.getCV()));
+        assert(!envelope.getCV().equals("") && correlationVector.IsValid(envelope.getCV()));
     }
 
     @Test
@@ -235,7 +235,7 @@ public class PartATests
         CustomPartA partA = new CustomPartA(new CustomLogger(), "iKey", correlationVector);
         Base event = (Base) EventHelper.generateBCEvent();
         Envelope envelope = partA.populateEnvelope(event, correlationVector.GetValue(), 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
-        assert(!envelope.getCV().equals("") && correlationVector.IsValidVector(envelope.getCV()));
+        assert(!envelope.getCV().equals("") && correlationVector.IsValid(envelope.getCV()));
     }
 
     /**
