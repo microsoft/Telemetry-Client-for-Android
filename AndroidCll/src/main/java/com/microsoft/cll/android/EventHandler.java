@@ -151,6 +151,11 @@ public class EventHandler extends ScheduledWorker
      */
     private boolean Filter(SerializedEvent event)
     {
+        if(event.getSerializedData().length() > SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.MAXEVENTSIZEINBYTES)) {
+            logger.info(TAG, "Event is too large");
+            return true;
+        }
+
         if(!IsUploadEnabled() || !IsInSample(event)) {
             logger.info(TAG, "Filtered event");
             return true;

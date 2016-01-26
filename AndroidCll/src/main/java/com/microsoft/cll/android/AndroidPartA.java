@@ -141,7 +141,7 @@ public class AndroidPartA extends PartA {
             final PackageInfo info = manager.getPackageInfo(
                     appContext.getPackageName(), 0);
             appVer = info.versionName;
-            appId = info.packageName;
+            appId = "A:" + info.packageName;
         }
         catch (final PackageManager.NameNotFoundException e)
         {

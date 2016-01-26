@@ -54,6 +54,8 @@ public class SingletonCll implements ICll, IChannel {
             throw new IllegalArgumentException("iKey cannot be null or \"\"");
         }
 
+        logger.setVerbosity(Verbosity.NONE);
+
         this.correlationVector   = correlationVector;
         this.logger              = logger;
         this.partA               = partA;
@@ -66,7 +68,6 @@ public class SingletonCll implements ICll, IChannel {
         this.settingsSync        = new SettingsSync(clientTelemetry, logger, iKey, partA);
         this.snapshotScheduler   = new SnapshotScheduler(clientTelemetry, logger, this);
 
-        this.logger.setVerbosity(Verbosity.INFO);
     }
 
     /**

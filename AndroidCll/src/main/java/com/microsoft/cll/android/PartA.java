@@ -92,7 +92,7 @@ public abstract class PartA {
         }
     }
 
-    public Envelope populateEnvelope(final Base base, String cV, int sampleRate, Cll.EventPersistence persistence, Cll.EventLatency latency, EventSensitivity... sensitivities) {
+    private Envelope populateEnvelope(final Base base, String cV, int sampleRate, Cll.EventPersistence persistence, Cll.EventLatency latency, EventSensitivity... sensitivities) {
         final Envelope envelope = new Envelope();
         setBaseType(base);
         envelope.setVer(csVer);
@@ -119,7 +119,7 @@ public abstract class PartA {
         return envelope;
     }
 
-    public com.microsoft.telemetry.cs2.Envelope populateLegacyEnvelope(final Base base, String cV, int sampleRate, Cll.EventPersistence persistence, Cll.EventLatency latency, Map<String, String> tags, EventSensitivity... sensitivities) {
+    private com.microsoft.telemetry.cs2.Envelope populateLegacyEnvelope(final Base base, String cV, int sampleRate, Cll.EventPersistence persistence, Cll.EventLatency latency, Map<String, String> tags, EventSensitivity... sensitivities) {
         if(tags == null) {
             tags = new HashMap<String, String>();
         }

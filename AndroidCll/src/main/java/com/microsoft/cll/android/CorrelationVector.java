@@ -10,20 +10,16 @@ public class CorrelationVector
     private String baseVector;
     private int currentVector;
 
-    private final String base64CharSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";;
+    private final String base64CharSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     private final int id0Length = 16;
     boolean isInitialized = false;
 
     /**
-     * Sets up the vector class with a random base vector and current vector count of 1
+     * Sets up the vector class with a random base vector and current vector count of 1 and sets initialized to true
      */
-    public CorrelationVector()
-    {
-        currentVector               = 1;
-        baseVector                  = SeedCorrelationVector();
-    }
-
     public void Init() {
+        baseVector = SeedCorrelationVector();
+        currentVector = 1;
         isInitialized = true;
     }
 
@@ -65,7 +61,10 @@ public class CorrelationVector
      */
     public synchronized String Extend()
     {
-        Init();
+        if(!isInitialized) {
+            Init();
+        }
+
         if(CanExtend()) {
             baseVector = GetValue();
             currentVector = 1;
@@ -91,7 +90,10 @@ public class CorrelationVector
      */
     public synchronized String Increment()
     {
-        Init();
+        if(!isInitialized) {
+            Init();
+        }
+
         int newVector = currentVector + 1;
         // Check if we can increment
         if(CanIncrement(newVector)) {
@@ -143,7 +145,7 @@ public class CorrelationVector
             int lastDot = vector.lastIndexOf(".");
             baseVector = vector.substring(0, lastDot);
             currentVector = Integer.parseInt(vector.substring(lastDot + 1));
-            Init();
+            isInitialized = true;
         } else {
             throw new IllegalArgumentException("Cannot set invalid correlation vector value");
         }
