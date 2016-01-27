@@ -31,8 +31,8 @@ public class CllTests {
 
     @Test
     public void testIsSingleton() {
-        ICll cll = SingletonCll.getInstance("iKey", new CustomLogger(), "", filePath, null);
-        ICll cll2 = SingletonCll.getInstance("iKey", new CustomLogger(), "", filePath, null);
+        ICll cll = SingletonCll.getInstance("iKey", new CustomLogger(), "", filePath, null, new CorrelationVector());
+        ICll cll2 = SingletonCll.getInstance("iKey", new CustomLogger(), "", filePath, null, new CorrelationVector());
         assert(cll == cll2);
         cll.stop();
     }

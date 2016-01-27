@@ -26,6 +26,7 @@ public abstract class AbstractSettings {
     protected String TAG = "AbstractSettings";
     protected SettingsStore.Settings ETagSettingName;
     private final PartA partA;
+    protected boolean disableUploadOn404 = false;
 
     protected AbstractSettings(ClientTelemetry clientTelemetry, ILogger logger, PartA partA) {
         this.clientTelemetry = clientTelemetry;
@@ -59,14 +60,24 @@ public abstract class AbstractSettings {
                 httpConnection.setRequestProperty("Accept", "application/json");
                 httpConnection.setRequestProperty("If-None-Match", SettingsStore.getCllSettingsAsString(ETagSettingName));
 
-
                 long start = Calendar.getInstance(TimeZone.getTimeZone("UTC"), Locale.US).getTimeInMillis();
                 httpConnection.connect();
                 long finish = Calendar.getInstance(TimeZone.getTimeZone("UTC"), Locale.US).getTimeInMillis();
                 long diff = finish - start;
-                clientTelemetry.SetAvgSettingsResponseLatencyMs((int) diff);
-                clientTelemetry.SetMaxSettingsResponseLatencyMs((int) diff);
+                clientTelemetry.SetAvgSettingsLatencyMs((int) diff);
+                clientTelemetry.SetMaxSettingsLatencyMs((int) diff);
 
+                if(httpConnection.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND && disableUploadOn404) {
+                    // Disable sending events if user gives us an iKey that doesn't follow an allowed format.
+                    logger.info(TAG, "Your iKey is invalid. Your events will not be sent!");
+                    SettingsStore.updateCllSetting(SettingsStore.Settings.UPLOADENABLED, "false");
+                } else if(httpConnection.getResponseCode() != HttpURLConnection.HTTP_NOT_FOUND && disableUploadOn404) {
+                    // We need this so that we are not permanently disabled after one 404.
+                    // Only re-enable if host settings returns non 404. If we didn't check for disableUploadOn404 then
+                    // the cll settings sync would end up re-enabling upload when we don't want it to.
+                    logger.info(TAG, "Your iKey is valid.");
+                    SettingsStore.updateCllSetting(SettingsStore.Settings.UPLOADENABLED, "true");
+                }
 
                 // Check for success (Only 200 and 304 are considered successful)
                 if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK || httpConnection.getResponseCode() == HttpURLConnection.HTTP_NOT_MODIFIED) {
@@ -75,7 +86,7 @@ public abstract class AbstractSettings {
                         SettingsStore.updateCllSetting(ETagSettingName, ETag);
                     }
                 } else {
-                    clientTelemetry.IncrementSettingsHttpFailures();
+                    clientTelemetry.IncrementSettingsHttpFailures(httpConnection.getResponseCode());
                 }
 
                 // Close the connection if this was not a success or there are no new settings
@@ -106,7 +117,7 @@ public abstract class AbstractSettings {
             }
         } catch (IOException e) {
             logger.error(TAG, e.getMessage());
-            clientTelemetry.IncrementSettingsHttpFailures();
+            clientTelemetry.IncrementSettingsHttpFailures(-1);
         } catch (JSONException e) {
             logger.error(TAG, e.getMessage());
         } finally {

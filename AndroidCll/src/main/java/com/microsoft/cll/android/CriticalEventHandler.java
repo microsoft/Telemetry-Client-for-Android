@@ -10,16 +10,15 @@ import java.util.List;
 public class CriticalEventHandler extends AbstractHandler
 {
     private final String TAG = "CriticalEventHandler";
-    private long counter = 0;
 
     /**
      * Creates an event handler for critical events
      * @param logger A logger to use
      * @param filePath The filepath where we will store events
      */
-    public CriticalEventHandler(ILogger logger, String filePath)
+    public CriticalEventHandler(ILogger logger, String filePath, ClientTelemetry clientTelemetry)
     {
-        super(logger, filePath);
+        super(logger, filePath, clientTelemetry);
         this.fileStorage        = new FileStorage(criticalEventFileExtension, logger, filePath, this);
     }
 
@@ -36,6 +35,8 @@ public class CriticalEventHandler extends AbstractHandler
 
             // If we don't limit this then we can potentially block a thread forever trying to add
             if(attempts >= SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.MAXCRITICALCANADDATTEMPTS)) {
+                // Drop event
+                clientTelemetry.IncrementEventsDroppedDueToQuota();
                 return;
             }
 
@@ -54,7 +55,6 @@ public class CriticalEventHandler extends AbstractHandler
         fileStorage.add(event);
         totalStorageUsed.getAndAdd(event.length());
         fileStorage.flush();
-        counter++;
     }
 
     /**

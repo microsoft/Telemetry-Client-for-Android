@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * This is a base class for setting up a scheduled task
  */
-public abstract class ScheduledWorker implements Runnable{
+public abstract class ScheduledWorker implements Runnable {
 
     protected ScheduledFuture nextExecution;
     protected ScheduledExecutorService executor;

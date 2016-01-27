@@ -9,8 +9,8 @@ public class AbstractSettingsTests extends AndroidTestCase {
         public void testSettingsQueryParameters() {
             String iKey = "myiKey";
             ILogger logger = AndroidLogger.getInstance();
-            ClientTelemetry clientTelemetry = new ClientTelemetry("testcll");
-            PartA partA = new AndroidPartA(logger, iKey, this.getContext());
+            ClientTelemetry clientTelemetry = new ClientTelemetry();
+            PartA partA = new AndroidPartA(logger, iKey, this.getContext(), new CorrelationVector());
             AbstractSettings settings = new HostSettings(clientTelemetry, logger, iKey, partA);
             String result = settings.getQueryParameters();
 

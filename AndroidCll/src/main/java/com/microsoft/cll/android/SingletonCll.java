@@ -34,11 +34,11 @@ public class SingletonCll implements ICll, IChannel {
     private static SingletonCll Instance;
     private static Object InstanceLock = new Object();
 
-    public static ICll getInstance(String iKey, ILogger logger, String cllName, String eventDir, PartA partA) {
+    public static ICll getInstance(String iKey, ILogger logger, String cllName, String eventDir, PartA partA, CorrelationVector correlationVector) {
         if(Instance == null) {
             synchronized (InstanceLock) {
                 if(Instance == null) {
-                    Instance = new SingletonCll(iKey, logger, cllName, eventDir, partA);
+                    Instance = new SingletonCll(iKey, logger, cllName, eventDir, partA, correlationVector);
                 }
             }
         }
@@ -48,17 +48,19 @@ public class SingletonCll implements ICll, IChannel {
     /**
      * Initializes the CLL with the given provider.
      */
-    private SingletonCll(String iKey, ILogger logger, String cllName, String eventDir, PartA partA)
+    private SingletonCll(String iKey, ILogger logger, String cllName, String eventDir, PartA partA, CorrelationVector correlationVector)
     {
         if(iKey == null || iKey == "") {
             throw new IllegalArgumentException("iKey cannot be null or \"\"");
         }
 
+        logger.setVerbosity(Verbosity.NONE);
+
+        this.correlationVector   = correlationVector;
         this.logger              = logger;
         this.partA               = partA;
-        this.clientTelemetry     = new ClientTelemetry(cllName);
+        this.clientTelemetry     = new ClientTelemetry();
         this.cllEvents           = new ArrayList<ICllEvents>();
-        this.correlationVector   = new CorrelationVector();
         this.eventHandler        = new EventHandler(clientTelemetry, cllEvents, logger, eventDir);
         this.isChanging          = new AtomicBoolean(false);
         this.isStarted           = new AtomicBoolean(false);
@@ -66,7 +68,7 @@ public class SingletonCll implements ICll, IChannel {
         this.settingsSync        = new SettingsSync(clientTelemetry, logger, iKey, partA);
         this.snapshotScheduler   = new SnapshotScheduler(clientTelemetry, logger, this);
 
-        this.logger.setVerbosity(Verbosity.INFO);
+        setEndpointUrl(SettingsStore.getCllSettingsAsString(SettingsStore.Settings.VORTEXPRODURL));
     }
 
     /**
@@ -205,7 +207,7 @@ public class SingletonCll implements ICll, IChannel {
             return;
         }
 
-        final SerializedEvent serializedEvent = this.partA.populate(event, this.correlationVector.GetValue(), tags, sensitivities);
+        final SerializedEvent serializedEvent = this.partA.populate(event, tags, sensitivities);
         this.eventHandler.log(serializedEvent);
     }
 

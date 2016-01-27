@@ -23,11 +23,11 @@ public class AndroidCll extends Cll implements SettingsStore.UpdateListener {
      * @param context The application context
      */
     public AndroidCll(String iKey, Context context) {
-        this(iKey, context, new AndroidPartA(AndroidLogger.getInstance(), iKey, context));
+        this(iKey, context, new CorrelationVector());
     }
 
-    private AndroidCll(String iKey, Context context, PartA partA) {
-        super(iKey, AndroidLogger.getInstance(), cllName, context.getFilesDir().getPath().toString(), partA);
+    private AndroidCll(String iKey, Context context, CorrelationVector correlationVector) {
+        super(iKey, AndroidLogger.getInstance(), cllName, context.getFilesDir().getPath().toString(), new AndroidPartA(AndroidLogger.getInstance(), iKey, context, correlationVector), correlationVector);
 
         this.cllPreferences = context.getSharedPreferences(sharedCllPreferencesName, 0);
         this.hostPreferences = context.getSharedPreferences(sharedHostPreferencesName, 0);

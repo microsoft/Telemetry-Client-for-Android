@@ -2,27 +2,16 @@
  * Generated from Microsoft.Android.LoggingLibrary.bond (https://github.com/Microsoft/bond)
 */
 package Microsoft.Android.LoggingLibrary;
+import com.microsoft.telemetry.Data;
+import com.microsoft.telemetry.IJsonSerializable;
+
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Map;
-import java.util.List;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.ArrayList;
-import com.microsoft.telemetry.ITelemetry;
-import com.microsoft.telemetry.ITelemetryData;
-import com.microsoft.telemetry.IContext;
-import com.microsoft.telemetry.IJsonSerializable;
-import com.microsoft.telemetry.Base;
-import com.microsoft.telemetry.Data;
-import com.microsoft.telemetry.Domain;
-import com.microsoft.telemetry.Extension;
-import com.microsoft.telemetry.JsonHelper;
 
 /**
  * Data contract class Snapshot.
  */
-public class Snapshot extends Data<Ms.Telemetry.ClientSnapshot> implements
+public class Snapshot extends Data<Ms.Telemetry.CllHeartBeat> implements
     IJsonSerializable
 {
     /**

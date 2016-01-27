@@ -16,6 +16,7 @@ import static org.junit.Assert.fail;
 
 public class NormalEventHandlerTests {
     private NormalEventHandler normalEventHandler;
+    private ClientTelemetry clientTelemetry;
     private String filePath;
     private final String newLine = "\r\n";
 
@@ -34,7 +35,8 @@ public class NormalEventHandlerTests {
                 dir.mkdirs();
             }
 
-            normalEventHandler = new NormalEventHandler(new CustomLogger(), filePath);
+            clientTelemetry = new ClientTelemetry();
+            normalEventHandler = new NormalEventHandler(new CustomLogger(), filePath, clientTelemetry);
         } catch (Exception e) {
             fail("Failed to setup test");
         }

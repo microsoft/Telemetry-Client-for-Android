@@ -45,8 +45,8 @@ public class EventHandler extends ScheduledWorker
         this.clientTelemetry    = clientTelemetry;
         this.cllEvents          = cllEvents;
         this.logger             = logger;
-        this.criticalHandler    = new CriticalEventHandler(logger, filePath);
-        this.normalHandler      = new NormalEventHandler(logger, filePath);
+        this.criticalHandler    = new CriticalEventHandler(logger, filePath, clientTelemetry);
+        this.normalHandler      = new NormalEventHandler(logger, filePath, clientTelemetry);
         this.sampleId           = -1;
     }
 
@@ -151,6 +151,11 @@ public class EventHandler extends ScheduledWorker
      */
     private boolean Filter(SerializedEvent event)
     {
+        if(event.getSerializedData().length() > SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.MAXEVENTSIZEINBYTES)) {
+            logger.info(TAG, "Event is too large");
+            return true;
+        }
+
         if(!IsUploadEnabled() || !IsInSample(event)) {
             logger.info(TAG, "Filtered event");
             return true;

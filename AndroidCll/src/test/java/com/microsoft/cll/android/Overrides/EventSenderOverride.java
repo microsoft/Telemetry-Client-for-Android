@@ -16,7 +16,7 @@ public class EventSenderOverride extends EventSender {
     private int numberOfEventsRejected = 0;
     private HttpURLConnection connection;
     public EventSenderOverride(URL url) {
-        super(url, new ClientTelemetry("test"), new CustomLogger());
+        super(url, new ClientTelemetry(), new CustomLogger());
     }
     public boolean disableNetwork = false;
 

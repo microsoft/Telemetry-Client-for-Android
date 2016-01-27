@@ -7,8 +7,8 @@ import java.util.Locale;
 public class CustomPartA extends PartA {
     protected final String TAG = "CustomPartA";
 
-    public CustomPartA(ILogger logger, String iKey) {
-        super(logger, iKey);
+    public CustomPartA(ILogger logger, String iKey, CorrelationVector correlationVector) {
+        super(logger, iKey, correlationVector);
         PopulateConstantValues();
     }
 
@@ -23,7 +23,7 @@ public class CustomPartA extends PartA {
     @Override
     protected void setDeviceInfo()
     {
-        osExt.setLocale(Locale.getDefault().getDisplayName());
+        osExt.setLocale(Locale.getDefault().toString().replaceAll("_", "-"));
         deviceExt.setLocalId("h:" + HashStringSha256(getMacAddress()));
     }
 

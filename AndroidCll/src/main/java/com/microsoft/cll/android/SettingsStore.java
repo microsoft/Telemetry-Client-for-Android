@@ -32,7 +32,8 @@ public class SettingsStore {
         NORMALEVENTMEMORYQUEUESIZE,
         CLLSETTINGSURL,
         HOSTSETTINGSETAG,
-        CLLSETTINGSETAG
+        CLLSETTINGSETAG,
+        VORTEXPRODURL
     }
 
     static {
@@ -57,6 +58,7 @@ public class SettingsStore {
         cllSettings.put(Settings.CLLSETTINGSURL, "https://settings.data.microsoft.com/settings/v2.0/androidLL/app");
         cllSettings.put(Settings.HOSTSETTINGSETAG, "");
         cllSettings.put(Settings.CLLSETTINGSETAG, "");
+        cllSettings.put(Settings.VORTEXPRODURL, "https://vortex.data.microsoft.com/collect/v1");
     }
 
     protected static int getCllSettingsAsInt(Settings setting) {

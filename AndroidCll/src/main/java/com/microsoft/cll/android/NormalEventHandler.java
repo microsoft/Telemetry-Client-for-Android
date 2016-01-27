@@ -12,8 +12,8 @@ public class NormalEventHandler extends AbstractHandler {
     private ArrayBlockingQueue<String> queueStorage;
     private final int queueSize = SettingsStore.getCllSettingsAsInt(SettingsStore.Settings.NORMALEVENTMEMORYQUEUESIZE);
 
-    public NormalEventHandler(ILogger logger, String filePath) {
-        super(logger, filePath);
+    public NormalEventHandler(ILogger logger, String filePath, ClientTelemetry clientTelemetry) {
+        super(logger, filePath, clientTelemetry);
         this.fileStorage        = new FileStorage(normalEventFileExtension, logger, filePath, this);
         this.queueStorage       = new ArrayBlockingQueue<String>(queueSize);
     }
@@ -86,6 +86,7 @@ public class NormalEventHandler extends AbstractHandler {
             for (String serializedEvent : events) {
                 if(!canAdd(serializedEvent)) {
                     logger.info(TAG, "Dropping event due to reaching max file storage");
+                    clientTelemetry.IncrementEventsDroppedDueToQuota();
                     continue;
                 }
 
