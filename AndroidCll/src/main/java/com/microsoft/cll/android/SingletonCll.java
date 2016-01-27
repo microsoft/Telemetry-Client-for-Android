@@ -68,6 +68,7 @@ public class SingletonCll implements ICll, IChannel {
         this.settingsSync        = new SettingsSync(clientTelemetry, logger, iKey, partA);
         this.snapshotScheduler   = new SnapshotScheduler(clientTelemetry, logger, this);
 
+        setEndpointUrl(SettingsStore.getCllSettingsAsString(SettingsStore.Settings.VORTEXPRODURL));
     }
 
     /**
