@@ -67,7 +67,7 @@ public abstract class PartA {
         appExt = new app();
         appExt.setExpId("");
         androidExt = new android();
-        androidExt.setLibVer(BuildNumber.BuildNumber);
+        androidExt.setLibVer(BuildConfig.VERSION_NAME);
 
         random = new Random();
         epoch = random.nextLong();
