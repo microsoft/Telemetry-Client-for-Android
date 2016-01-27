@@ -2,6 +2,7 @@ package com.microsoft.cll.android;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -39,6 +40,7 @@ public class AndroidPartA extends PartA {
     /**
      * Sets the users id using the google account on the device if present.
      */
+    @SuppressLint("MissingPermission")
     @Override
     protected void setUserId() {
         // Check to see if device has associated google account. If it does we use the first one.
@@ -72,6 +74,7 @@ public class AndroidPartA extends PartA {
      * Sets the device unique id using a hash of either the device id if present or the mac address.
      * Also sets the os version and the locale
      */
+    @SuppressLint("MissingPermission")
     @Override
     protected void setDeviceInfo() {
         deviceExt.setLocalId("");

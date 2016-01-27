@@ -240,7 +240,8 @@ public class PartATests
 
     @Test
     public void testSeqNumberNotIncrementedOnDrop() {
-        CustomPartA partA = new CustomPartA(new CustomLogger(), "iKey");
+        CorrelationVector correlationVector = new CorrelationVector();
+        CustomPartA partA = new CustomPartA(new CustomLogger(), "iKey", correlationVector);
         assert(partA.seqCounter.get() == 0);
         Base event = (Base) EventHelper.generateBCEvent();
         Envelope envelope = partA.populateEnvelope(event, "cv", 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL, EventSensitivity.Drop);
