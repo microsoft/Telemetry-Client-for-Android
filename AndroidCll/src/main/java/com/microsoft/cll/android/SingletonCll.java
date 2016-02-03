@@ -269,12 +269,4 @@ public class SingletonCll implements ICll, IChannel {
     {
         eventHandler.setSender(sender);
     }
-
-    public void setAppUserId(String userId) {
-        partA.setAppUserId(userId);
-    }
-
-    public String getAppUserId() {
-        return partA.getAppUserId();
-    }
 }

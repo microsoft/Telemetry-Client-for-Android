@@ -22,8 +22,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * PopulatePartA provides values used for Part A population of the Envelope.
@@ -67,6 +65,7 @@ public abstract class PartA {
         deviceExt = new device();
         osExt = new os();
         appExt = new app();
+        appExt.setExpId("");
         androidExt = new android();
         androidExt.setLibVer(BuildConfig.VERSION_NAME);
 
@@ -149,30 +148,6 @@ public abstract class PartA {
         return envelope;
     }
 
-    void setAppUserId(String userId) {
-        if(userId == null) {
-            appExt.setUserId(null);
-            return;
-        }
-
-        // Validate userId
-        Pattern pattern = Pattern.compile("^((c:)|(i:)|(w:)).*");
-        Matcher matcher = pattern.matcher(userId);
-        if(!matcher.find()) {
-            // If userId does not follow a valid format set it back to null
-            appExt.setUserId(null);
-            logger.warn(TAG, "The userId supplied does not match the required format.");
-            return;
-        }
-
-        // Set UserId
-        appExt.setUserId(userId);
-    }
-
-    String getAppUserId() {
-        return appExt.getUserId();
-    }
-
     /**
      * Sets whether we should use the legacy part A fields or not.
      * @param value True if we should, false if we should not
@@ -245,7 +220,7 @@ public abstract class PartA {
         extensions.put("device", deviceExt);
         extensions.put("android", androidExt);
 
-        if(appExt.getExpId() != null || appExt.getUserId() != null) {
+        if(appExt.getExpId() != null && !appExt.getExpId().equals("")) {
             extensions.put("app", appExt);
         }
 
@@ -263,43 +238,30 @@ public abstract class PartA {
         }
 
         // We have to copy these objects so the values we change won't be permanently set.
-        user userExtensionFromEnvelope = (user)envelope.getExt().get("user");
-        user newUserExtension = new user();
-        newUserExtension.setLocalId(userExtensionFromEnvelope.getLocalId());
-        newUserExtension.setAuthId(userExtensionFromEnvelope.getAuthId());
-        newUserExtension.setId(userExtensionFromEnvelope.getId());
-        newUserExtension.setVer(userExtensionFromEnvelope.getVer());
-        envelope.getExt().put("user", newUserExtension);
+        user userExt = (user)envelope.getExt().get("user");
+        user user2 = new user();
+        user2.setLocalId(userExt.getLocalId());
+        user2.setAuthId(userExt.getAuthId());
+        user2.setId(userExt.getId());
+        user2.setVer(userExt.getVer());
+        envelope.getExt().put("user", user2);
 
-        device deviceExtensionFromEnvelope = (device)envelope.getExt().get("device");
-        device newDeviceExtension = new device();
-        newDeviceExtension.setLocalId(deviceExtensionFromEnvelope.getLocalId());
-        newDeviceExtension.setVer(deviceExtensionFromEnvelope.getVer());
-        newDeviceExtension.setId(deviceExtensionFromEnvelope.getId());
-        newDeviceExtension.setAuthId(deviceExtensionFromEnvelope.getAuthId());
-        newDeviceExtension.setAuthSecId(deviceExtensionFromEnvelope.getAuthSecId());
-        newDeviceExtension.setDeviceClass(deviceExtensionFromEnvelope.getDeviceClass());
-        envelope.getExt().put("device", newDeviceExtension);
-
-        // The app extension may not always be present if neither experimentId or userId are set
-        if(envelope.getExt().containsKey("app")) {
-            app appExtensionFromEnvelope = (app) envelope.getExt().get("app");
-            app newAppExtension = new app();
-            newAppExtension.setExpId(appExtensionFromEnvelope.getExpId());
-            newAppExtension.setUserId(appExtensionFromEnvelope.getUserId());
-            envelope.getExt().put("app", newAppExtension);
-        }
+        device deviceExt = (device)envelope.getExt().get("device");
+        device device2 = new device();
+        device2.setLocalId(deviceExt.getLocalId());
+        device2.setVer(deviceExt.getVer());
+        device2.setId(deviceExt.getId());
+        device2.setAuthId(deviceExt.getAuthId());
+        device2.setAuthSecId(deviceExt.getAuthSecId());
+        device2.setDeviceClass(deviceExt.getDeviceClass());
+        envelope.getExt().put("device", device2);
 
         if(level == EventSensitivity.Drop.getCode()) {
             // Drop PII
             ((user)envelope.getExt().get("user")).setLocalId(null);
             ((device)envelope.getExt().get("device")).setLocalId("r:" + String.valueOf(random.nextLong()));
-            // The app extension may not always be present if neither experimentId or userId are set
-            if(envelope.getExt().containsKey("app")) {
-                ((app)envelope.getExt().get("app")).setUserId(null);
-            }
 
-                // Only drop cV if it exists.
+            // Only drop cV if it exists.
             if(correlationVector.isInitialized) {
                 envelope.setCV(null);
             }
@@ -310,11 +272,6 @@ public abstract class PartA {
             // Hash PII
             ((user)envelope.getExt().get("user")).setLocalId("d:" + HashStringSha256(((user) envelope.getExt().get("user")).getLocalId()));
             ((device)envelope.getExt().get("device")).setLocalId("d:" + HashStringSha256(((device) envelope.getExt().get("device")).getLocalId()));
-            // The app extension may not always be present if neither experimentId or userId are set
-            if(envelope.getExt().containsKey("app")) {
-                ((app)envelope.getExt().get("app")).setUserId("d:" + HashStringSha256(((app) envelope.getExt().get("app")).getUserId()));
-            }
-
 
             // Only hash cV if it exists.
             if(correlationVector.isInitialized) {
@@ -348,7 +305,7 @@ public abstract class PartA {
      * @return the date time in string form
      */
     private String getDateTime() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS'Z'", Locale.US);
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         return dateFormat.format(new Date()).toString();
