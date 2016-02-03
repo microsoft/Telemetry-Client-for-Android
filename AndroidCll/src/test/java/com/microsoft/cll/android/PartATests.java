@@ -3,6 +3,7 @@ package com.microsoft.cll.android;
 import com.microsoft.cll.android.Helpers.EventHelper;
 import com.microsoft.telemetry.Base;
 import com.microsoft.telemetry.Envelope;
+import com.microsoft.telemetry.extensions.app;
 import com.microsoft.telemetry.extensions.device;
 import com.microsoft.telemetry.extensions.os;
 import com.microsoft.telemetry.extensions.user;
@@ -135,6 +136,7 @@ public class PartATests
         CorrelationVector correlationVector = new CorrelationVector();
         correlationVector.Init();
         CustomPartA partA = new CustomPartA(new CustomLogger(), "iKey", correlationVector);
+        partA.setAppUserId("c:myid");
         Base event = (Base) EventHelper.generateBCEvent();
         Envelope envelopeUnHashed = partA.populateEnvelope(event, correlationVector.GetValue(), 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
         Envelope envelope = partA.populateEnvelope(event, correlationVector.GetValue(), 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL, EventSensitivity.Hash);
@@ -153,6 +155,7 @@ public class PartATests
         assert (!envelope.getAppVer().isEmpty());
         assert ("d:".concat(partA.HashStringSha256(((device)envelopeUnHashed.getExt().get("device")).getLocalId())).equals(((device) envelope.getExt().get("device")).getLocalId()));
         assert ("d:".concat(partA.HashStringSha256(((user)envelopeUnHashed.getExt().get("user")).getLocalId())).equals(((user)envelope.getExt().get("user")).getLocalId()));
+        assert ("d:".concat(partA.HashStringSha256(((app)envelopeUnHashed.getExt().get("app")).getUserId())).equals(((app)envelope.getExt().get("app")).getUserId()));
     }
 
     @Test
@@ -160,6 +163,7 @@ public class PartATests
         CorrelationVector correlationVector = new CorrelationVector();
         correlationVector.Init();
         CustomPartA partA = new CustomPartA(new CustomLogger(), "iKey", correlationVector);
+        partA.setAppUserId("c:myid");
         Base event = (Base) EventHelper.generateBCEvent();
         Envelope envelopeUnHashed = partA.populateEnvelope(event, correlationVector.GetValue(), 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
         Envelope envelope = partA.populateEnvelope(event, correlationVector.GetValue(), 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL, EventSensitivity.Drop);
@@ -178,6 +182,7 @@ public class PartATests
         assert (!envelope.getAppVer().isEmpty());
         assert ((device)envelope.getExt().get("device")).getLocalId().startsWith("r:");
         assert (((user)envelope.getExt().get("user")).getLocalId() == null);
+        assert (((app)envelope.getExt().get("app")).getUserId() == null);
     }
 
     @Test
@@ -249,6 +254,34 @@ public class PartATests
         assert(partA.seqCounter.get() == 0);
         envelope = partA.populateEnvelope(event, "cv", 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
         assert(partA.seqCounter.get() == 1);
+    }
+
+    @Test
+    public void testSetAppUserId() {
+        CorrelationVector correlationVector = new CorrelationVector();
+        CustomPartA partA = new CustomPartA(new CustomLogger(), "iKey", correlationVector);
+        partA.setAppUserId("c:myid");
+        Base event = (Base) EventHelper.generateBCEvent();
+        Envelope envelope = partA.populateEnvelope(event, correlationVector.GetValue(), 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
+        assert(((app)envelope.getExt().get("app")).getUserId().equals("c:myid"));
+    }
+
+    @Test
+    public void testSetBadAppUserId() {
+        CorrelationVector correlationVector = new CorrelationVector();
+        CustomPartA partA = new CustomPartA(new CustomLogger(), "iKey", correlationVector);
+
+        // Set a good user Id
+        partA.setAppUserId("c:myid");
+
+        // We set the ExpId because otherwise the app extension won't get set at all since both fields are null
+        partA.setExpId("m:myexpid");
+
+        // Set a bad user Id which should result in the user Id field being reset to null
+        partA.setAppUserId("myidbadid");
+        Base event = (Base) EventHelper.generateBCEvent();
+        Envelope envelope = partA.populateEnvelope(event, correlationVector.GetValue(), 10, Cll.EventPersistence.NORMAL, Cll.EventLatency.NORMAL);
+        assert(((app)envelope.getExt().get("app")).getUserId() == null);
     }
 
     /**

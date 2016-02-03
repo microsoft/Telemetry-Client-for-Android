@@ -93,6 +93,16 @@ public class Cll implements IChannel, ICll
         cll.SubscribeCllEvents(cllEvents);
     }
 
+    @Override
+    public void setAppUserId(String userId) {
+        cll.setAppUserId(userId);
+    }
+
+    @Override
+    public String getAppUserId() {
+        return cll.getAppUserId();
+    }
+
     public CorrelationVector getCorrelationVector() {
         return ((SingletonCll)cll).correlationVector;
     }
