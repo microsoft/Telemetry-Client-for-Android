@@ -31,6 +31,11 @@ public class app extends Extension implements
     private String expId;
     
     /**
+     * Backing field for property UserId.
+     */
+    private String userId;
+    
+    /**
      * Initializes a new instance of the app class.
      */
     public app()
@@ -52,6 +57,20 @@ public class app extends Extension implements
         this.expId = value;
     }
     
+    /**
+     * Gets the UserId property.
+     */
+    public String getUserId() {
+        return this.userId;
+    }
+    
+    /**
+     * Sets the UserId property.
+     */
+    public void setUserId(String value) {
+        this.userId = value;
+    }
+    
 
     /**
      * Serializes the beginning of this object to the passed in writer.
@@ -64,6 +83,13 @@ public class app extends Extension implements
         {
             writer.write(prefix + "\"expId\":");
             writer.write(JsonHelper.convert(this.expId));
+            prefix = ",";
+        }
+        
+        if (!(this.userId == null))
+        {
+            writer.write(prefix + "\"userId\":");
+            writer.write(JsonHelper.convert(this.userId));
             prefix = ",";
         }
         

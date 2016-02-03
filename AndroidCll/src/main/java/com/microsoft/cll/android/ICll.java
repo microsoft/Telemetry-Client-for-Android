@@ -87,4 +87,16 @@ public interface ICll {
     void synchronize();
 
     void SubscribeCllEvents(ICllEvents cllEvents);
+
+    /**
+     * Sets the userId field in the app extension.
+     * @param userId The user id to use
+     *               Must start with  'c:' 'i:' or 'w:'
+     */
+    void setAppUserId(String userId);
+
+    /**
+     * @return The userId set in the app extension.
+     */
+    String getAppUserId();
 }
